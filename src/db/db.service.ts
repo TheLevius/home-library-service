@@ -4,8 +4,8 @@ import { CreateDBUserDto } from './dto/user/create-user.dto';
 import { DBAlbum, Album } from './interfaces/album.interface';
 import { DBArtist, Artist } from './interfaces/artist.interface';
 import { DBTrack, Track } from './interfaces/track.interface';
-import { DBUser, User } from './interfaces/user.interface';
-
+import { DBUser } from './interfaces/user.interface';
+type User = DBUser;
 @Injectable()
 export class DbService {
     private users: DBUser[] = [];

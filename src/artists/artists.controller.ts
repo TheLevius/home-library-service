@@ -9,37 +9,37 @@ import {
     Put,
 } from '@nestjs/common';
 import { Statuses } from 'src/db/interfaces/statuses.interface';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { UsersService } from './users.service';
+import { ArtistsService } from './artists.service';
+import { CreateArtistDto } from './dto/create-artist.dto';
+import { UpdateArtistDto } from './dto/update-artist.dto';
 
-@Controller('user')
-export class UsersController {
-    constructor(private readonly usersService: UsersService) {}
+@Controller('artist')
+export class ArtistsController {
+    constructor(private readonly artistsService: ArtistsService) {}
     @Get()
     getAll() {
-        const result = this.usersService.findAll();
+        const result = this.artistsService.findAll();
         return result;
     }
     @Get(':id')
     getOne(@Param('id') id: string) {
-        const result = this.usersService.findOneById(id);
+        const result = this.artistsService.findOneById(id);
         if (result.status === Statuses.Failed) {
             throw new BadRequestException('User not found');
         }
         return result.row;
     }
     @Post()
-    create(@Body() dto: CreateUserDto) {
-        const result = this.usersService.create(dto);
+    create(@Body() dto: CreateArtistDto) {
+        const result = this.artistsService.create(dto);
         if (result.status === Statuses.Failed) {
             throw new BadRequestException('Bad Request');
         }
         return result.row;
     }
     @Put(':id')
-    update(@Param('id') id: string, @Body() dto: UpdateUserDto) {
-        const result = this.usersService.update(id, dto);
+    update(@Param('id') id: string, @Body() dto: UpdateArtistDto) {
+        const result = this.artistsService.update(id, dto);
         if (result.status === Statuses.Failed) {
             throw new BadRequestException('Bad Request');
         }
@@ -47,7 +47,7 @@ export class UsersController {
     }
     @Delete(':id')
     delete(@Param('id') id: string) {
-        const result = this.usersService.delete(id);
+        const result = this.artistsService.delete(id);
         if (result.status === Statuses.Failed) {
             throw new BadRequestException('Bad Request');
         }

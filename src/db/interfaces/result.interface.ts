@@ -1,7 +1,5 @@
 import { Statuses } from './statuses.interface';
 
-export interface Result<T> {
-    status: Statuses;
+export type Result<T> = {
     index?: number;
-    row?: T;
-}
+} & ({ row: T; status: Statuses.Ok } | { status: Statuses.Failed });

@@ -7,4 +7,3 @@ export interface DBUser extends DBSign {
     createdAt: number; // timestamp of creation
     updatedAt: number; // timestamp of last update
 }
-export type User = DBUser;

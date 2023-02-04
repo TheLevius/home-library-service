@@ -9,37 +9,37 @@ import {
     Put,
 } from '@nestjs/common';
 import { Statuses } from 'src/db/interfaces/statuses.interface';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { UsersService } from './users.service';
+import { CreateTrackDto } from './dto/create-track.dto';
+import { UpdateTrackDto } from './dto/update-track.dto';
+import { TracksService } from './tracks.service';
 
-@Controller('user')
-export class UsersController {
-    constructor(private readonly usersService: UsersService) {}
+@Controller('tracks')
+export class TracksController {
+    constructor(private readonly tracksService: TracksService) {}
     @Get()
     getAll() {
-        const result = this.usersService.findAll();
+        const result = this.tracksService.findAll();
         return result;
     }
     @Get(':id')
     getOne(@Param('id') id: string) {
-        const result = this.usersService.findOneById(id);
+        const result = this.tracksService.findOneById(id);
         if (result.status === Statuses.Failed) {
             throw new BadRequestException('User not found');
         }
         return result.row;
     }
     @Post()
-    create(@Body() dto: CreateUserDto) {
-        const result = this.usersService.create(dto);
+    create(@Body() dto: CreateTrackDto) {
+        const result = this.tracksService.create(dto);
         if (result.status === Statuses.Failed) {
             throw new BadRequestException('Bad Request');
         }
         return result.row;
     }
     @Put(':id')
-    update(@Param('id') id: string, @Body() dto: UpdateUserDto) {
-        const result = this.usersService.update(id, dto);
+    update(@Param('id') id: string, @Body() dto: UpdateTrackDto) {
+        const result = this.tracksService.update(id, dto);
         if (result.status === Statuses.Failed) {
             throw new BadRequestException('Bad Request');
         }
@@ -47,7 +47,7 @@ export class UsersController {
     }
     @Delete(':id')
     delete(@Param('id') id: string) {
-        const result = this.usersService.delete(id);
+        const result = this.tracksService.delete(id);
         if (result.status === Statuses.Failed) {
             throw new BadRequestException('Bad Request');
         }
