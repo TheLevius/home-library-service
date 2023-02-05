@@ -1,7 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { DBArtist } from 'src/db/interfaces/artist.interface';
 import { Result } from 'src/db/interfaces/result.interface';
-import { Statuses } from 'src/db/interfaces/statuses.interface';
 import { DbAlbumsTableService } from 'src/db/table.album.service';
 import { DbArtistsTableService } from 'src/db/table.artist.service';
 import { DbTracksTableService } from 'src/db/table.track.service';
@@ -19,37 +17,17 @@ export class ArtistsService {
         private readonly dbTracksTableService: DbTracksTableService
     ) {}
 
-    findAll = (): Artist[] => {
-        const result = this.dbArtistsTableService.findAll();
-        return result.map(this.trimer);
-    };
+    findAll = (): Artist[] => this.dbArtistsTableService.findAll();
 
-    findOneById = (id: string): Result<Artist> => {
-        return this.trimResult(this.dbArtistsTableService.findOneById(id));
-    };
+    findOneById = (id: string): Result<Artist> =>
+        this.dbArtistsTableService.findOneById(id);
 
-    create = (dto: CreateArtistDto): Result<Artist> => {
-        return this.trimResult(this.dbArtistsTableService.create(dto));
-    };
+    create = (dto: CreateArtistDto): Result<Artist> =>
+        this.dbArtistsTableService.create(dto);
 
-    update = (id: string, dto: UpdateArtistDto): Result<Artist> => {
-        return this.trimResult(this.dbArtistsTableService.update(id, dto));
-    };
+    update = (id: string, dto: UpdateArtistDto): Result<Artist> =>
+        this.dbArtistsTableService.update(id, dto);
 
-    delete = (id: string): Result<Artist> => {
-        return this.trimResult(this.dbArtistsTableService.delete(id));
-    };
-
-    trimResult = (result: Result<DBArtist>): Result<Artist> => {
-        if (result.status === Statuses.Failed) {
-            return result;
-        }
-        delete result.row.favorite;
-        return result;
-    };
-
-    trimer = (row: DBArtist): Artist => {
-        delete row.favorite;
-        return row;
-    };
+    delete = (id: string): Result<Artist> =>
+        this.dbArtistsTableService.delete(id);
 }

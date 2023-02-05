@@ -1,5 +1,4 @@
-export interface UpdateDBArtistDto {
+export interface UpdateArtistDto {
     name?: string;
     grammy?: boolean;
-    favorite?: boolean;
 }

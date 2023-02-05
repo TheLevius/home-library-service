@@ -1,3 +1,3 @@
-export interface UpdateDBUserDto {
+export interface UpdateUserDto {
     password: string;
 }

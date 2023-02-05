@@ -1,41 +1,38 @@
 import { Injectable } from '@nestjs/common';
 import { randomUUID } from 'node:crypto';
-import { CreateDBUserDto } from './dto/user/create-user.dto';
-import { UpdateDBUserDto } from './dto/user/update-user.dto';
+import { CreateUserDto } from './dto/user/create-user.dto';
+import { UpdateUserDto } from './dto/user/update-user.dto';
 import { Result } from './interfaces/result.interface';
 import { Statuses } from './interfaces/statuses.interface';
-import { DBUser } from './interfaces/user.interface';
+import { User } from './interfaces/user.interface';
 
 @Injectable()
 export class DbUsersTableService {
-    private table: DBUser[] = [];
-    public findAll = (): DBUser[] => this.table.map((row) => ({ ...row }));
-    public findOneById = (id: string): Result<DBUser> => {
-        const index = this.table.findIndex((row: DBUser) => row.id === id);
+    private table: User[] = [];
+    public findAll = (): User[] => this.table.map((row) => ({ ...row }));
+    public findOneById = (id: string): Result<User> => {
+        const index = this.table.findIndex((row: User) => row.id === id);
         if (index < 0) {
             return { status: Statuses.Failed };
         }
-
         return {
-            row: { ...this.table[index] },
-            index,
             status: Statuses.Ok,
+            row: { ...this.table[index] },
         };
     };
-    public create = (dto: CreateDBUserDto): Result<DBUser> => {
+    public create = (dto: CreateUserDto): Result<User> => {
         const currentDate = Date.now();
-        const newUser: DBUser = {
+        const newUser: User = {
             id: randomUUID(),
-            login: dto.login,
-            password: dto.password,
             createdAt: currentDate,
             updatedAt: currentDate,
             version: 1,
+            ...dto,
         };
         this.table.push(newUser);
         return { row: { ...newUser }, status: Statuses.Ok };
     };
-    public update = (id: string, dto: UpdateDBUserDto): Result<DBUser> => {
+    public update = (id: string, dto: UpdateUserDto): Result<User> => {
         const result = this.findOneById(id);
         if (result.status === Statuses.Failed) {
             return result;
@@ -46,7 +43,7 @@ export class DbUsersTableService {
         this.table[index] = { ...row, ...dto };
         return { row: { ...this.table[index] }, status: Statuses.Ok };
     };
-    public delete = (id: string): Result<DBUser> => {
+    public delete = (id: string): Result<User> => {
         const result = this.findOneById(id);
         if (result.status === Statuses.Failed) {
             return result;

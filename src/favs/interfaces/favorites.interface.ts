@@ -1,8 +1,8 @@
-import { Album } from './album.interface';
-import { Artist } from './artist.interface';
-import { Track } from './track.interface';
+import { Album } from 'src/db/interfaces/album.interface';
+import { Artist } from 'src/db/interfaces/artist.interface';
+import { Track } from 'src/db/interfaces/track.interface';
 
-export interface Favorites {
+export interface FavoriteIds {
     artists: string[]; // favorite artists ids
     albums: string[]; // favorite albums ids
     tracks: string[]; // favorite tracks ids
@@ -12,4 +12,3 @@ export interface FavoritesResponse {
     albums: Album[];
     tracks: Track[];
 }
-export type TableNames = keyof Favorites;

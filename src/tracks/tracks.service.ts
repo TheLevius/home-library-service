@@ -1,7 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { Result } from 'src/db/interfaces/result.interface';
-import { Statuses } from 'src/db/interfaces/statuses.interface';
-import { DBTrack } from 'src/db/interfaces/track.interface';
 import { DbAlbumsTableService } from 'src/db/table.album.service';
 import { DbArtistsTableService } from 'src/db/table.artist.service';
 import { DbTracksTableService } from 'src/db/table.track.service';
@@ -19,37 +17,17 @@ export class TracksService {
         private readonly dbTracksTableService: DbTracksTableService
     ) {}
 
-    findAll = (): Track[] => {
-        const result = this.dbTracksTableService.findAll();
-        return result.map(this.trimer);
-    };
+    findAll = (): Track[] => this.dbTracksTableService.findAll();
 
-    findOneById = (id: string): Result<Track> => {
-        return this.trimResult(this.dbTracksTableService.findOneById(id));
-    };
+    findOneById = (id: string): Result<Track> =>
+        this.dbTracksTableService.findOneById(id);
 
-    create = (dto: CreateTrackDto): Result<Track> => {
-        return this.trimResult(this.dbTracksTableService.create(dto));
-    };
+    create = (dto: CreateTrackDto): Result<Track> =>
+        this.dbTracksTableService.create(dto);
 
-    update = (id: string, dto: UpdateTrackDto): Result<Track> => {
-        return this.trimResult(this.dbTracksTableService.update(id, dto));
-    };
+    update = (id: string, dto: UpdateTrackDto): Result<Track> =>
+        this.dbTracksTableService.update(id, dto);
 
-    delete = (id: string): Result<Track> => {
-        return this.trimResult(this.dbTracksTableService.delete(id));
-    };
-
-    trimResult = (result: Result<DBTrack>): Result<Track> => {
-        if (result.status === Statuses.Failed) {
-            return result;
-        }
-        delete result.row.favorite;
-        return result;
-    };
-
-    trimer = (row: DBTrack): Track => {
-        delete row.favorite;
-        return row;
-    };
+    delete = (id: string): Result<Track> =>
+        this.dbTracksTableService.delete(id);
 }

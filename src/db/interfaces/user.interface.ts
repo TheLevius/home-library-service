@@ -1,6 +1,6 @@
 import { DBSign } from './index.interface';
 
-export interface DBUser extends DBSign {
+export interface User extends DBSign {
     login: string;
     password: string;
     version: number; // integer number, increments on update
