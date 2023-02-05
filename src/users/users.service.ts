@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
+import { createHash } from 'node:crypto';
 import { Result } from 'src/db/interfaces/result.interface';
+import { Statuses } from 'src/db/interfaces/statuses.interface';
 import { User } from 'src/db/interfaces/user.interface';
 import { DbUsersTableService } from 'src/db/table.users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -10,14 +12,32 @@ export class UsersService {
     constructor(private dbUsersTableService: DbUsersTableService) {}
 
     public findAll = () => this.dbUsersTableService.findAll();
-    public findOneById = (id: string): Result<User> =>
-        this.dbUsersTableService.findOneById(id);
-    public create = (dto: CreateUserDto): Result<User> => {
-        return this.dbUsersTableService.create(dto);
+
+    public findOneById = (id: string): Result<Omit<User, 'password'>> => {
+        const result = this.dbUsersTableService.findOneById(id);
+        if (result.status === Statuses.Failed) {
+            return result;
+        }
+        delete result.row.password;
+        return result;
     };
+
+    public create = ({ login, password }: CreateUserDto): Result<User> => {
+        return this.dbUsersTableService.create({
+            login,
+            password: this.hashPassword(password),
+        });
+    };
+
     public update = (id: string, dto: UpdateUserDto): Result<User> => {
-        return this.dbUsersTableService.update(id, dto);
+        return this.dbUsersTableService.update(id, {
+            password: this.hashPassword(dto.password),
+        });
     };
+
     public delete = (id: string): Result<User> =>
         this.dbUsersTableService.delete(id);
+
+    private hashPassword = (password: string): string =>
+        createHash('sha256').update(password).digest('hex');
 }
