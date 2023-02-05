@@ -4,12 +4,24 @@ import { CreateUserDto } from './dto/user/create-user.dto';
 import { UpdateUserDto } from './dto/user/update-user.dto';
 import { Result } from './interfaces/result.interface';
 import { Statuses } from './interfaces/statuses.interface';
-import { User } from './interfaces/user.interface';
+import { User, UserKeys } from './interfaces/user.interface';
 
 @Injectable()
 export class DbUsersTableService {
     private table: User[] = [];
     public findAll = (): User[] => this.table.map((row) => ({ ...row }));
+    public findMany = ({
+        key,
+        equals,
+    }: {
+        key: UserKeys;
+        equals: unknown;
+    }): User[] => {
+        return this.table.reduce((result: User[], user) => {
+            if (user[key] === equals) result.push({ ...user });
+            return result;
+        }, []);
+    };
     public findOneById = (id: string): Result<User> => {
         const index = this.table.findIndex((row: User) => row.id === id);
         if (index < 0) {
@@ -17,20 +29,21 @@ export class DbUsersTableService {
         }
         return {
             status: Statuses.Ok,
+            index,
             row: { ...this.table[index] },
         };
     };
     public create = (dto: CreateUserDto): Result<User> => {
         const currentDate = Date.now();
-        const newUser: User = {
+        const row: User = {
             id: randomUUID(),
             createdAt: currentDate,
             updatedAt: currentDate,
             version: 1,
             ...dto,
         };
-        this.table.push(newUser);
-        return { row: { ...newUser }, status: Statuses.Ok };
+        this.table.push({ ...row });
+        return { row, status: Statuses.Ok };
     };
     public update = (id: string, dto: UpdateUserDto): Result<User> => {
         const result = this.findOneById(id);

@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { randomUUID } from 'node:crypto';
 import { CreateAlbumDto } from './dto/album/create-album.dto';
 import { UpdateAlbumDto } from './dto/album/update-album.dto';
-import { Album } from './interfaces/album.interface';
+import { Album, AlbumKeys } from './interfaces/album.interface';
 import { Result } from './interfaces/result.interface';
 import { Statuses } from './interfaces/statuses.interface';
 
@@ -10,6 +10,18 @@ import { Statuses } from './interfaces/statuses.interface';
 export class DbAlbumsTableService {
     private table: Album[] = [];
     public findAll = (): Album[] => this.table.map((row) => ({ ...row }));
+    public findMany = ({
+        key,
+        equals,
+    }: {
+        key: AlbumKeys;
+        equals: unknown;
+    }): Album[] => {
+        return this.table.reduce((result: Album[], album) => {
+            if (album[key] === equals) result.push({ ...album });
+            return result;
+        }, []);
+    };
     public findOneById = (id: string): Result<Album> => {
         const index = this.table.findIndex((row) => row.id === id);
         if (index < 0) {

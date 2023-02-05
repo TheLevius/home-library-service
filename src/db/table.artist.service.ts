@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { randomUUID } from 'crypto';
 import { CreateArtistDto } from './dto/artist/create-artist.dto';
 import { UpdateArtistDto } from './dto/artist/update-artist.dto';
-import { Artist } from './interfaces/artist.interface';
+import { Artist, ArtistKeys } from './interfaces/artist.interface';
 import { Result } from './interfaces/result.interface';
 import { Statuses } from './interfaces/statuses.interface';
 
@@ -10,14 +10,27 @@ import { Statuses } from './interfaces/statuses.interface';
 export class DbArtistsTableService {
     private table: Artist[] = [];
     public findAll = (): Artist[] => this.table.map((row) => ({ ...row }));
+    public findMany = ({
+        key,
+        equals,
+    }: {
+        key: ArtistKeys;
+        equals: unknown;
+    }): Artist[] => {
+        return this.table.reduce((result: Artist[], artist) => {
+            if (artist[key] === equals) result.push({ ...artist });
+            return result;
+        }, []);
+    };
     public findOneById = (id: string): Result<Artist> => {
         const index = this.table.findIndex((row) => row.id === id);
         if (index < 0) {
             return { status: Statuses.Failed };
         }
         return {
-            row: { ...this.table[index] },
             status: Statuses.Ok,
+            index,
+            row: { ...this.table[index] },
         };
     };
     public create = (dto: CreateArtistDto): Result<Artist> => {

@@ -7,3 +7,5 @@ export interface User extends DBSign {
     createdAt: number; // timestamp of creation
     updatedAt: number; // timestamp of last update
 }
+
+export type UserKeys = keyof User;

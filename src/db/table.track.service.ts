@@ -4,12 +4,24 @@ import { CreateTrackDto } from './dto/track/create-track.dto';
 import { UpdateTrackDto } from './dto/track/update-track.dto';
 import { Result } from './interfaces/result.interface';
 import { Statuses } from './interfaces/statuses.interface';
-import { Track } from './interfaces/track.interface';
+import { Track, TrackKeys } from './interfaces/track.interface';
 
 @Injectable()
 export class DbTracksTableService {
     private table: Track[] = [];
     public findAll = (): Track[] => this.table.map((row) => ({ ...row }));
+    public findMany = ({
+        key,
+        equals,
+    }: {
+        key: TrackKeys;
+        equals: unknown;
+    }): Track[] => {
+        return this.table.reduce((result: Track[], track) => {
+            if (track[key] === equals) result.push({ ...track });
+            return result;
+        }, []);
+    };
     public findOneById = (id: string): Result<Track> => {
         const index = this.table.findIndex((row: Track) => row.id === id);
         if (index < 0) {

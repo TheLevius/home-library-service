@@ -6,3 +6,5 @@ export interface Track extends DBSign {
     albumId: string | null; // refers to Album
     duration: number; // integer number
 }
+
+export type TrackKeys = keyof Track;

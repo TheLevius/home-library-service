@@ -1,11 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { createHash } from 'node:crypto';
 import { Result } from 'src/db/interfaces/result.interface';
 import { Statuses } from 'src/db/interfaces/statuses.interface';
 import { User } from 'src/db/interfaces/user.interface';
 import { DbUsersTableService } from 'src/db/table.users.service';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { UpdatePasswordDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -29,9 +29,19 @@ export class UsersService {
         });
     };
 
-    public update = (id: string, dto: UpdateUserDto): Result<User> => {
+    public update = (id: string, dto: UpdatePasswordDto): Result<User> => {
+        const result = this.dbUsersTableService.findOneById(id);
+        if (result.status === Statuses.Failed) {
+            return result;
+        }
+        const {
+            row: { password },
+        } = result;
+        if (this.hashPassword(dto.oldPassword) !== password) {
+            throw new BadRequestException('Bad Password');
+        }
         return this.dbUsersTableService.update(id, {
-            password: this.hashPassword(dto.password),
+            password: this.hashPassword(dto.newPassword),
         });
     };
 

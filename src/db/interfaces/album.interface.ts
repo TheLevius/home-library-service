@@ -4,3 +4,4 @@ export interface Album extends DBSign {
     year: number;
     artistId: string | null; // refers to Artist
 }
+export type AlbumKeys = keyof Album;
