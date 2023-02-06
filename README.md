@@ -2,13 +2,19 @@
 
 ## Prerequisites
 
-- Git - [Download & Install Git](https://git-scm.com/downloads).
-- Node.js - [Download & Install Node.js](https://nodejs.org/en/download/) and the npm package manager.
+-   Git - [Download & Install Git](https://git-scm.com/downloads).
+-   Node.js - [Download & Install Node.js](https://nodejs.org/en/download/) and the npm package manager.
 
 ## Downloading
 
 ```
-git clone {repository URL}
+git clone git@github.com:TheLevius/node-home-library-service.git
+```
+
+## Checkout on task branch
+
+```
+git checkout task-6-nestjs-service
 ```
 
 ## Installing NPM modules
