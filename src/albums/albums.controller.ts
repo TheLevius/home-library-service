@@ -5,6 +5,7 @@ import {
     Delete,
     Get,
     Param,
+    ParseUUIDPipe,
     Post,
     Put,
 } from '@nestjs/common';
@@ -23,7 +24,7 @@ export class AlbumsController {
         return result;
     }
     @Get(':id')
-    getOne(@Param('id') id: string) {
+    getOne(@Param('id', ParseUUIDPipe) id: string) {
         const result = this.albumsService.findOneById(id);
         if (result.status === Statuses.Failed) {
             throw new BadRequestException('User not found');
@@ -39,7 +40,10 @@ export class AlbumsController {
         return result.row;
     }
     @Put(':id')
-    update(@Param('id') id: string, @Body() dto: UpdateAlbumDto) {
+    update(
+        @Param('id', ParseUUIDPipe) id: string,
+        @Body() dto: UpdateAlbumDto
+    ) {
         const result = this.albumsService.update(id, dto);
         if (result.status === Statuses.Failed) {
             throw new BadRequestException('Bad Request');
@@ -47,7 +51,7 @@ export class AlbumsController {
         return result.row;
     }
     @Delete(':id')
-    delete(@Param('id') id: string) {
+    delete(@Param('id', ParseUUIDPipe) id: string) {
         const result = this.albumsService.delete(id);
         if (result.status === Statuses.Failed) {
             throw new BadRequestException('Bad Request');

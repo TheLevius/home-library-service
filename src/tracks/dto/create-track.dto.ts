@@ -1,6 +1,14 @@
-export interface CreateTrackDto {
-    name: string;
+import { IsInt, IsString, ValidateIf } from 'class-validator';
+
+export class CreateTrackDto {
+    @IsString()
+    name!: string;
+    @ValidateIf((_object, value) => value !== null)
+    @IsString()
     artistId: string | null; // refers to Artist
+    @ValidateIf((_object, value) => value !== null)
+    @IsString()
     albumId: string | null; // refers to Album
-    duration: number; // integer number
+    @IsInt()
+    duration!: number; // integer number
 }

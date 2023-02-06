@@ -4,6 +4,7 @@ import {
     Delete,
     Get,
     Param,
+    ParseUUIDPipe,
     Post,
 } from '@nestjs/common';
 import { Statuses } from 'src/db/interfaces/statuses.interface';
@@ -19,7 +20,7 @@ export class FavsController {
         return result;
     }
     @Post('track/:id')
-    createTrack(@Param('id') id: string) {
+    createTrack(@Param('id', ParseUUIDPipe) id: string) {
         const result = this.favsService.create(id, 'tracks');
         if (result.status === Statuses.Failed) {
             throw new BadRequestException('Bad Request');
@@ -27,7 +28,7 @@ export class FavsController {
         return result.row;
     }
     @Delete('track/:id')
-    deleteTrack(@Param('id') id: string) {
+    deleteTrack(@Param('id', ParseUUIDPipe) id: string) {
         const result = this.favsService.delete(id, 'tracks');
         if (result.status === Statuses.Failed) {
             throw new BadRequestException('Bad Request');
@@ -36,7 +37,7 @@ export class FavsController {
     }
 
     @Post('album/:id')
-    createAlbum(@Param('id') id: string) {
+    createAlbum(@Param('id', ParseUUIDPipe) id: string) {
         const result = this.favsService.create(id, 'albums');
         if (result.status === Statuses.Failed) {
             throw new BadRequestException('Bad Request');
@@ -44,7 +45,7 @@ export class FavsController {
         return result.row;
     }
     @Delete('album/:id')
-    deleteAlbum(@Param('id') id: string) {
+    deleteAlbum(@Param('id', ParseUUIDPipe) id: string) {
         const result = this.favsService.delete(id, 'albums');
         if (result.status === Statuses.Failed) {
             throw new BadRequestException('Bad Request');
@@ -53,7 +54,7 @@ export class FavsController {
     }
 
     @Post('artist/:id')
-    createArtist(@Param('id') id: string) {
+    createArtist(@Param('id', ParseUUIDPipe) id: string) {
         const result = this.favsService.create(id, 'artists');
         if (result.status === Statuses.Failed) {
             throw new BadRequestException('Bad Request');
@@ -61,7 +62,7 @@ export class FavsController {
         return { id: result.row };
     }
     @Delete('artist/:id')
-    deleteArtist(@Param('id') id: string) {
+    deleteArtist(@Param('id', ParseUUIDPipe) id: string) {
         const result = this.favsService.delete(id, 'artists');
         if (result.status === Statuses.Failed) {
             throw new BadRequestException('Bad Request');

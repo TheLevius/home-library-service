@@ -11,7 +11,13 @@ import { UpdatePasswordDto } from './dto/update-user.dto';
 export class UsersService {
     constructor(private dbUsersTableService: DbUsersTableService) {}
 
-    public findAll = () => this.dbUsersTableService.findAll();
+    public findAll = () => {
+        const users = this.dbUsersTableService.findAll();
+        return users.map((user) => {
+            delete user.password;
+            return user;
+        });
+    };
 
     public findOneById = (id: string): Result<Omit<User, 'password'>> =>
         this.trimPassword(this.dbUsersTableService.findOneById(id));
