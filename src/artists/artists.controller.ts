@@ -4,6 +4,8 @@ import {
     Controller,
     Delete,
     Get,
+    HttpCode,
+    NotFoundException,
     Param,
     ParseUUIDPipe,
     Post,
@@ -26,7 +28,7 @@ export class ArtistsController {
     getOne(@Param('id', ParseUUIDPipe) id: string) {
         const result = this.artistsService.findOneById(id);
         if (result.status === Statuses.Failed) {
-            throw new BadRequestException('User not found');
+            throw new NotFoundException('User not found');
         }
         return result.row;
     }
@@ -49,6 +51,7 @@ export class ArtistsController {
         }
         return result.row;
     }
+    @HttpCode(204)
     @Delete(':id')
     delete(@Param('id', ParseUUIDPipe) id: string) {
         const result = this.artistsService.delete(id);

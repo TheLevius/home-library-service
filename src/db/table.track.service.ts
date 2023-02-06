@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { randomUUID } from 'node:crypto';
 import { CreateTrackDto } from './dto/track/create-track.dto';
 import { UpdateTrackDto } from './dto/track/update-track.dto';
@@ -56,7 +56,7 @@ export class DbTracksTableService {
     public delete = (id: string): Result<Track> => {
         const result = this.findOneById(id);
         if (result.status === Statuses.Failed) {
-            return result;
+            throw new NotFoundException('Track not found');
         }
         this.table = this.table.filter((row) => row.id !== id);
         return {

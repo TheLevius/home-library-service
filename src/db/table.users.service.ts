@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { randomUUID } from 'node:crypto';
 import { CreateUserDto } from './dto/user/create-user.dto';
 import { UpdateUserDto } from './dto/user/update-user.dto';
@@ -59,7 +59,7 @@ export class DbUsersTableService {
     public delete = (id: string): Result<User> => {
         const result = this.findOneById(id);
         if (result.status === Statuses.Failed) {
-            return result;
+            throw new NotFoundException('User not found');
         }
         this.table = this.table.filter((row) => row.id !== id);
         return {

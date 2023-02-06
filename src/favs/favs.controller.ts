@@ -3,6 +3,7 @@ import {
     Controller,
     Delete,
     Get,
+    HttpCode,
     Param,
     ParseUUIDPipe,
     Post,
@@ -27,6 +28,7 @@ export class FavsController {
         }
         return result.row;
     }
+    @HttpCode(204)
     @Delete('track/:id')
     deleteTrack(@Param('id', ParseUUIDPipe) id: string) {
         const result = this.favsService.delete(id, 'tracks');
@@ -44,13 +46,14 @@ export class FavsController {
         }
         return result.row;
     }
+    @HttpCode(204)
     @Delete('album/:id')
     deleteAlbum(@Param('id', ParseUUIDPipe) id: string) {
         const result = this.favsService.delete(id, 'albums');
         if (result.status === Statuses.Failed) {
             throw new BadRequestException('Bad Request');
         }
-        return result.row;
+        return;
     }
 
     @Post('artist/:id')
@@ -61,6 +64,7 @@ export class FavsController {
         }
         return { id: result.row };
     }
+    @HttpCode(204)
     @Delete('artist/:id')
     deleteArtist(@Param('id', ParseUUIDPipe) id: string) {
         const result = this.favsService.delete(id, 'artists');

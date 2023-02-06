@@ -4,6 +4,7 @@ import {
     Controller,
     Delete,
     Get,
+    HttpCode,
     Param,
     ParseUUIDPipe,
     Post,
@@ -49,6 +50,7 @@ export class UsersController {
         }
         return result.row;
     }
+    @HttpCode(204)
     @Delete(':id')
     delete(@Param('id', ParseUUIDPipe) id: string) {
         const result = this.usersService.delete(id);

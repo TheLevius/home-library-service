@@ -1,5 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Result } from 'src/db/interfaces/result.interface';
+import { Statuses } from 'src/db/interfaces/statuses.interface';
 import { DbAlbumsTableService } from 'src/db/table.album.service';
 import { DbArtistsTableService } from 'src/db/table.artist.service';
 import { DbFavoritesTableService } from 'src/db/table.favorites.service';
@@ -27,10 +28,19 @@ export class ArtistsService {
     create = (dto: CreateArtistDto): Result<Artist> =>
         this.dbArtistsTableService.create(dto);
 
-    update = (id: string, dto: UpdateArtistDto): Result<Artist> =>
-        this.dbArtistsTableService.update(id, dto);
+    update = (id: string, dto: UpdateArtistDto): Result<Artist> => {
+        const result = this.dbArtistsTableService.update(id, dto);
+        if (result.status === Statuses.Failed) {
+            throw new NotFoundException(`Artists doesn't exist`);
+        }
+        return result;
+    };
 
     delete = (id: string): Result<Artist> => {
+        const result = this.dbArtistsTableService.findOneById(id);
+        if (result.status === Statuses.Failed) {
+            throw new NotFoundException(`User doesn't exist`);
+        }
         this.dbFavoritesTableService.delete(id, 'artists');
         const artistAlbums = this.dbAlbumsTableService.findMany({
             key: 'artistId',

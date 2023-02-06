@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { randomUUID } from 'node:crypto';
 import { CreateAlbumDto } from './dto/album/create-album.dto';
 import { UpdateAlbumDto } from './dto/album/update-album.dto';
@@ -46,7 +46,7 @@ export class DbAlbumsTableService {
     public update = (id: string, dto: UpdateAlbumDto): Result<Album> => {
         const result = this.findOneById(id);
         if (result.status === Statuses.Failed) {
-            return result;
+            throw new NotFoundException('Album not found');
         }
         const { row, index } = result;
         this.table[index] = { ...row, ...dto };
@@ -55,7 +55,7 @@ export class DbAlbumsTableService {
     public delete = (id: string): Result<Album> => {
         const result = this.findOneById(id);
         if (result.status === Statuses.Failed) {
-            return result;
+            throw new NotFoundException('Album not found');
         }
         this.table = this.table.filter((row) => row.id !== id);
         return {

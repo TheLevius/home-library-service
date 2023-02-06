@@ -4,6 +4,8 @@ import {
     Controller,
     Delete,
     Get,
+    HttpCode,
+    NotFoundException,
     Param,
     ParseUUIDPipe,
     Post,
@@ -26,7 +28,7 @@ export class TracksController {
     getOne(@Param('id', ParseUUIDPipe) id: string) {
         const result = this.tracksService.findOneById(id);
         if (result.status === Statuses.Failed) {
-            throw new BadRequestException('User not found');
+            throw new NotFoundException('User not found');
         }
         return result.row;
     }
@@ -45,10 +47,11 @@ export class TracksController {
     ) {
         const result = this.tracksService.update(id, dto);
         if (result.status === Statuses.Failed) {
-            throw new BadRequestException('Bad Request');
+            throw new NotFoundException('Bad Request');
         }
         return result.row;
     }
+    @HttpCode(204)
     @Delete(':id')
     delete(@Param('id', ParseUUIDPipe) id: string) {
         const result = this.tracksService.delete(id);

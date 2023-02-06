@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+    BadRequestException,
+    ForbiddenException,
+    Injectable,
+    NotFoundException,
+} from '@nestjs/common';
 import { createHash } from 'node:crypto';
 import { Result } from 'src/db/interfaces/result.interface';
 import { Statuses } from 'src/db/interfaces/statuses.interface';
@@ -39,13 +44,13 @@ export class UsersService {
     ): Result<Omit<User, 'password'>> => {
         const existResult = this.dbUsersTableService.findOneById(id);
         if (existResult.status === Statuses.Failed) {
-            return existResult;
+            throw new NotFoundException('User not found');
         }
         const {
             row: { password },
         } = existResult;
         if (this.hashPassword(dto.oldPassword) !== password) {
-            throw new BadRequestException('Bad Password');
+            throw new ForbiddenException(`Password mismatch`);
         }
         const result = this.dbUsersTableService.update(id, {
             password: this.hashPassword(dto.newPassword),
@@ -63,7 +68,7 @@ export class UsersService {
         result: Result<User>
     ): Result<Omit<User, 'password'>> => {
         if (result.status === Statuses.Failed) {
-            return result;
+            throw new NotFoundException('User not');
         }
         delete result.row.password;
         return result;
