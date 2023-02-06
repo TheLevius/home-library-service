@@ -1,5 +1,4 @@
 import {
-    BadRequestException,
     ForbiddenException,
     Injectable,
     NotFoundException,
@@ -50,7 +49,7 @@ export class UsersService {
             row: { password },
         } = existResult;
         if (this.hashPassword(dto.oldPassword) !== password) {
-            throw new ForbiddenException(`Password mismatch`);
+            throw new ForbiddenException(`oldPassowrd is wrong`);
         }
         const result = this.dbUsersTableService.update(id, {
             password: this.hashPassword(dto.newPassword),

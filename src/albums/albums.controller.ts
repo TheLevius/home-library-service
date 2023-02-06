@@ -29,7 +29,7 @@ export class AlbumsController {
     getOne(@Param('id', ParseUUIDPipe) id: string) {
         const result = this.albumsService.findOneById(id);
         if (result.status === Statuses.Failed) {
-            throw new NotFoundException('User not found');
+            throw new NotFoundException('Album was not found');
         }
         return result.row;
     }

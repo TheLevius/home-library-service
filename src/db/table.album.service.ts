@@ -46,7 +46,7 @@ export class DbAlbumsTableService {
     public update = (id: string, dto: UpdateAlbumDto): Result<Album> => {
         const result = this.findOneById(id);
         if (result.status === Statuses.Failed) {
-            throw new NotFoundException('Album not found');
+            throw new NotFoundException('Album was not found');
         }
         const { row, index } = result;
         this.table[index] = { ...row, ...dto };
@@ -55,7 +55,7 @@ export class DbAlbumsTableService {
     public delete = (id: string): Result<Album> => {
         const result = this.findOneById(id);
         if (result.status === Statuses.Failed) {
-            throw new NotFoundException('Album not found');
+            throw new NotFoundException('Album was not found');
         }
         this.table = this.table.filter((row) => row.id !== id);
         return {

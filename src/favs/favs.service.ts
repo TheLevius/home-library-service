@@ -64,8 +64,8 @@ export class FavsService {
         const existResult = this[table].findOneById(id);
         if (existResult.status === Statuses.Failed) {
             throw new UnprocessableEntityException(
-                `${table.slice(
-                    0,
+                `${table[0].toUpperCase()}${table.slice(
+                    1,
                     table.length - 1
                 )} with id: ${id} does not exist`
             );
@@ -83,7 +83,10 @@ export class FavsService {
     delete = (id: string, table: TableNames) => {
         if (!this.dbFavoritesTableService.isExist(id, table)) {
             throw new NotFoundException(
-                `${table.slice(0, table.length - 1)} is not favorite`
+                `${table[0].toUpperCase()}${table.slice(
+                    1,
+                    table.length - 1
+                )} was not found`
             );
         }
         return {

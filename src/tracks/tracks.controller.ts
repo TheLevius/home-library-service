@@ -28,7 +28,7 @@ export class TracksController {
     getOne(@Param('id', ParseUUIDPipe) id: string) {
         const result = this.tracksService.findOneById(id);
         if (result.status === Statuses.Failed) {
-            throw new NotFoundException('User not found');
+            throw new NotFoundException('Track was not found');
         }
         return result.row;
     }
@@ -47,7 +47,7 @@ export class TracksController {
     ) {
         const result = this.tracksService.update(id, dto);
         if (result.status === Statuses.Failed) {
-            throw new NotFoundException('Bad Request');
+            throw new NotFoundException('Track was not found');
         }
         return result.row;
     }
