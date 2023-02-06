@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+    Injectable,
+    NotFoundException,
+    UnprocessableEntityException,
+} from '@nestjs/common';
 import { TableNames } from 'src/db/interfaces/favorites.interface';
 import { Statuses } from 'src/db/interfaces/statuses.interface';
 import { DbAlbumsTableService } from 'src/db/table.album.service';
@@ -15,26 +19,31 @@ export class FavsService {
         private readonly dbFavoritesTableService: DbFavoritesTableService
     ) {}
     findAll = () => this.dbFavoritesTableService.findAll();
-    findOneById = (id: string, table: TableNames) =>
-        this.dbFavoritesTableService.findOneById(id, table);
     create = (id: string, table: TableNames) => {
         const existResult = this[table].findOneById(id);
         if (existResult.status === Statuses.Failed) {
-            return existResult;
+            throw new UnprocessableEntityException(
+                `${table.slice(
+                    0,
+                    table.length - 1
+                )} with id: ${id} does not exist`
+            );
         }
-        const checkResult = this.dbFavoritesTableService.findOneById(id, table);
-        if (checkResult.status === Statuses.Failed) {
-            return checkResult;
-        }
-        return {
+        const result = {
             status: Statuses.Ok,
-            row: this.dbFavoritesTableService.create(id, table),
+            row: id,
         };
+        if (this.dbFavoritesTableService.isExist(id, table)) {
+            return result;
+        }
+        this.dbFavoritesTableService.create(id, table);
+        return result;
     };
     delete = (id: string, table: TableNames) => {
-        const checkResult = this.dbFavoritesTableService.findOneById(id, table);
-        if (checkResult.status === Statuses.Failed) {
-            return checkResult;
+        if (!this.dbFavoritesTableService.isExist(id, table)) {
+            throw new NotFoundException(
+                `${table.slice(0, table.length - 1)} is not favorite`
+            );
         }
         return {
             status: Statuses.Ok,

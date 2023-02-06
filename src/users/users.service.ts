@@ -13,41 +13,53 @@ export class UsersService {
 
     public findAll = () => this.dbUsersTableService.findAll();
 
-    public findOneById = (id: string): Result<Omit<User, 'password'>> => {
-        const result = this.dbUsersTableService.findOneById(id);
+    public findOneById = (id: string): Result<Omit<User, 'password'>> =>
+        this.trimPassword(this.dbUsersTableService.findOneById(id));
+
+    public create = ({
+        login,
+        password,
+    }: CreateUserDto): Result<Omit<User, 'password'>> => {
+        const result = this.dbUsersTableService.create({
+            login,
+            password: this.hashPassword(password),
+        });
+        return this.trimPassword(result);
+    };
+
+    public update = (
+        id: string,
+        dto: UpdatePasswordDto
+    ): Result<Omit<User, 'password'>> => {
+        const existResult = this.dbUsersTableService.findOneById(id);
+        if (existResult.status === Statuses.Failed) {
+            return existResult;
+        }
+        const {
+            row: { password },
+        } = existResult;
+        if (this.hashPassword(dto.oldPassword) !== password) {
+            throw new BadRequestException('Bad Password');
+        }
+        const result = this.dbUsersTableService.update(id, {
+            password: this.hashPassword(dto.newPassword),
+        });
+        return this.trimPassword(result);
+    };
+
+    public delete = (id: string): Result<Omit<User, 'password'>> =>
+        this.trimPassword(this.dbUsersTableService.delete(id));
+
+    private hashPassword = (password: string): string =>
+        createHash('sha256').update(password).digest('hex');
+
+    private trimPassword = (
+        result: Result<User>
+    ): Result<Omit<User, 'password'>> => {
         if (result.status === Statuses.Failed) {
             return result;
         }
         delete result.row.password;
         return result;
     };
-
-    public create = ({ login, password }: CreateUserDto): Result<User> => {
-        return this.dbUsersTableService.create({
-            login,
-            password: this.hashPassword(password),
-        });
-    };
-
-    public update = (id: string, dto: UpdatePasswordDto): Result<User> => {
-        const result = this.dbUsersTableService.findOneById(id);
-        if (result.status === Statuses.Failed) {
-            return result;
-        }
-        const {
-            row: { password },
-        } = result;
-        if (this.hashPassword(dto.oldPassword) !== password) {
-            throw new BadRequestException('Bad Password');
-        }
-        return this.dbUsersTableService.update(id, {
-            password: this.hashPassword(dto.newPassword),
-        });
-    };
-
-    public delete = (id: string): Result<User> =>
-        this.dbUsersTableService.delete(id);
-
-    private hashPassword = (password: string): string =>
-        createHash('sha256').update(password).digest('hex');
 }

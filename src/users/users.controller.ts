@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 import { Statuses } from 'src/db/interfaces/statuses.interface';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { UpdatePasswordDto } from './dto/update-user.dto';
 import { UsersService } from './users.service';
 
 @Controller('user')
@@ -38,7 +38,7 @@ export class UsersController {
         return result.row;
     }
     @Put(':id')
-    update(@Param('id') id: string, @Body() dto: UpdateUserDto) {
+    update(@Param('id') id: string, @Body() dto: UpdatePasswordDto) {
         const result = this.usersService.update(id, dto);
         if (result.status === Statuses.Failed) {
             throw new BadRequestException('Bad Request');

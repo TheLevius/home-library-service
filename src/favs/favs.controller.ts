@@ -58,7 +58,7 @@ export class FavsController {
         if (result.status === Statuses.Failed) {
             throw new BadRequestException('Bad Request');
         }
-        return result.row;
+        return { id: result.row };
     }
     @Delete('artist/:id')
     deleteArtist(@Param('id') id: string) {
@@ -66,6 +66,6 @@ export class FavsController {
         if (result.status === Statuses.Failed) {
             throw new BadRequestException('Bad Request');
         }
-        return result.row;
+        return { id: result.row };
     }
 }
