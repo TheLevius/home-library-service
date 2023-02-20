@@ -26,7 +26,7 @@ export class ArtistsService {
 
     findOneById = async (id: string): Promise<Artist> => {
         try {
-            const result = await this.prisma.artist.findUnique({
+            const result = await this.prisma.artist.findUniqueOrThrow({
                 where: { id },
             });
             return result;
@@ -39,9 +39,9 @@ export class ArtistsService {
     create = async (dto: CreateArtistDto): Promise<Artist> =>
         this.prisma.artist.create({ data: dto });
 
-    update = (id: string, dto: UpdateArtistDto): Promise<Artist> => {
+    update = async (id: string, dto: UpdateArtistDto): Promise<Artist> => {
         try {
-            const result = this.prisma.artist.update({
+            const result = await this.prisma.artist.update({
                 where: { id },
                 data: dto,
             });

@@ -130,7 +130,7 @@ export class FavsService {
             return result;
         } catch (err) {
             console.error(err);
-            throw new BadRequestException(`artist was not found`);
+            throw new NotFoundException(`artist was not found`);
         }
         // if (!this.dbFavoritesTableService.isExist(id, table)) {
         //     throw new NotFoundException(
@@ -166,7 +166,7 @@ export class FavsService {
             return result;
         } catch (err) {
             console.error(err);
-            throw new BadRequestException(`Album was not found`);
+            throw new NotFoundException(`Album was not found`);
         }
     };
     createFavoriteTrack = async (id: string) => {
@@ -190,7 +190,7 @@ export class FavsService {
             return result;
         } catch (err) {
             console.error(err);
-            throw new BadRequestException(`Track was not found`);
+            throw new NotFoundException(`Track was not found`);
         }
     };
 }

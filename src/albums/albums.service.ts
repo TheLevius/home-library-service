@@ -25,7 +25,9 @@ export class AlbumsService {
 
     findOneById = async (id: string): Promise<Album> => {
         try {
-            const result = this.prisma.album.findUnique({ where: { id } });
+            const result = await this.prisma.album.findUniqueOrThrow({
+                where: { id },
+            });
             return result;
         } catch (err) {
             console.error;
@@ -57,7 +59,7 @@ export class AlbumsService {
             return result;
         } catch (err) {
             console.error(err);
-            throw new NotFoundException(`Album doesn't exist`);
+            throw new NotFoundException(`Album with id: ${id} doesn't exist`);
         }
         // this.dbFavoritesTableService.delete(id, 'albums');
         // const albumTracks = this.dbTracksTableService.findMany({

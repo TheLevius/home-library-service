@@ -29,7 +29,7 @@ export class TracksService {
 
     findOneById = async (id: string): Promise<Track> => {
         try {
-            const result = await this.prisma.track.findUnique({
+            const result = await this.prisma.track.findUniqueOrThrow({
                 where: { id },
             });
             return result;
@@ -65,7 +65,7 @@ export class TracksService {
             return result;
         } catch (err) {
             console.error(err);
-            throw new BadRequestException('Bad Request');
+            throw new NotFoundException(`Track with id: ${id} does not exist`);
         }
         // this.dbFavoritesTableService.delete(id, 'tracks');
         // return this.dbTracksTableService.delete(id);
