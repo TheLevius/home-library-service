@@ -13,3 +13,7 @@ export interface FavoritesResponse {
     tracks: Track[];
 }
 export type TableNames = keyof Favorites;
+export type FavoriteTableNames =
+    | 'favoriteArtist'
+    | 'favoriteAlbum'
+    | 'favoriteTrack';

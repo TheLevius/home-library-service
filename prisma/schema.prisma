@@ -12,7 +12,7 @@ datasource db {
 
 model User {
 	id        	String   	@id @default(uuid())
-	login     	String   	@unique @db.VarChar(100)
+	login     	String   	@db.VarChar(100)
 	password  	String
 	version   	Int      	@default(1)
 	createdAt 	DateTime 	@default(now())
@@ -32,7 +32,7 @@ model Album {
 	id       	String 		@id @default(uuid())
 	name     	String 		@db.VarChar(100)
 	year     	Int
-	artist   	Artist? 		@relation(fields: [artistId], references: [id])
+	artist   	Artist? 	@relation(fields: [artistId], references: [id])
 	artistId 	String?
 	tracks		Track[]
 	favorites	FavoriteAlbum[]
@@ -51,18 +51,18 @@ model Track {
 
 model FavoriteArtist {
 	id			String		@id @default(uuid())
-	artist		Artist		@relation(fields: [artistId], references: [id])
-	artistId	String
+	artist		Artist		@relation(fields: [artistId], references: [id], onDelete: Cascade)
+	artistId	String		@unique
 }
 
 model FavoriteAlbum {
 	id			String		@id	@default(uuid())
-	album		Album		@relation(fields: [albumId], references: [id])
-	albumId		String
+	album		Album		@relation(fields: [albumId], references: [id], onDelete: Cascade)
+	albumId		String		@unique
 }
 
 model FavoriteTrack {
 	id			String		@id @default(uuid())
-	track		Track		@relation(fields: [trackId], references: [id])
-	trackId		String
+	track		Track		@relation(fields: [trackId], references: [id], onDelete: Cascade)
+	trackId		String		@unique
 }

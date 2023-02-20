@@ -16,61 +16,61 @@ import { FavsService } from './favs.service';
 export class FavsController {
     constructor(private readonly favsService: FavsService) {}
     @Get()
-    getAll() {
-        const result = this.favsService.findAll();
+    async getAll() {
+        const result = await this.favsService.findAll();
         return result;
     }
     @Post('track/:id')
-    createTrack(@Param('id', ParseUUIDPipe) id: string) {
-        const result = this.favsService.create(id, 'tracks');
-        if (result.status === Statuses.Failed) {
-            throw new BadRequestException('Bad Request');
-        }
-        return result.row;
+    async createTrack(@Param('id', ParseUUIDPipe) id: string) {
+        const result = await this.favsService.createFavoriteTrack(id);
+        // if (result.status === Statuses.Failed) {
+        //     throw new BadRequestException('Bad Request');
+        // }
+        return { id: result };
     }
     @HttpCode(204)
     @Delete('track/:id')
-    deleteTrack(@Param('id', ParseUUIDPipe) id: string) {
-        const result = this.favsService.delete(id, 'tracks');
-        if (result.status === Statuses.Failed) {
-            throw new BadRequestException('Bad Request');
-        }
-        return result.row;
+    async deleteTrack(@Param('id', ParseUUIDPipe) id: string) {
+        const result = await this.favsService.deleteFavoriteTrack(id);
+        // if (result.status === Statuses.Failed) {
+        //     throw new BadRequestException('Bad Request');
+        // }
+        return { id: result };
     }
 
     @Post('album/:id')
-    createAlbum(@Param('id', ParseUUIDPipe) id: string) {
-        const result = this.favsService.create(id, 'albums');
-        if (result.status === Statuses.Failed) {
-            throw new BadRequestException('Bad Request');
-        }
-        return result.row;
+    async createAlbum(@Param('id', ParseUUIDPipe) id: string) {
+        const result = await this.favsService.createFavoriteAlbum(id);
+        // if (result.status === Statuses.Failed) {
+        //     throw new BadRequestException('Bad Request');
+        // }
+        return { id: result };
     }
     @HttpCode(204)
     @Delete('album/:id')
-    deleteAlbum(@Param('id', ParseUUIDPipe) id: string) {
-        const result = this.favsService.delete(id, 'albums');
-        if (result.status === Statuses.Failed) {
-            throw new BadRequestException('Bad Request');
-        }
-        return;
+    async deleteAlbum(@Param('id', ParseUUIDPipe) id: string) {
+        const result = await this.favsService.deleteFavoriteAlbum(id);
+        // if (result.status === Statuses.Failed) {
+        //     throw new BadRequestException('Bad Request');
+        // }
+        return { id: result };
     }
 
     @Post('artist/:id')
-    createArtist(@Param('id', ParseUUIDPipe) id: string) {
-        const result = this.favsService.create(id, 'artists');
-        if (result.status === Statuses.Failed) {
-            throw new BadRequestException('Bad Request');
-        }
-        return { id: result.row };
+    async createArtist(@Param('id', ParseUUIDPipe) id: string) {
+        const result = await this.favsService.createFavoriteArtist(id);
+        // if (result.status === Statuses.Failed) {
+        //     throw new BadRequestException('Bad Request');
+        // }
+        return { id: result };
     }
     @HttpCode(204)
     @Delete('artist/:id')
-    deleteArtist(@Param('id', ParseUUIDPipe) id: string) {
-        const result = this.favsService.delete(id, 'artists');
-        if (result.status === Statuses.Failed) {
-            throw new BadRequestException('Bad Request');
-        }
-        return { id: result.row };
+    async deleteArtist(@Param('id', ParseUUIDPipe) id: string) {
+        const result = await this.favsService.deleteFavoriteArtist(id);
+        // if (result.status === Statuses.Failed) {
+        //     throw new BadRequestException('Bad Request');
+        // }
+        return { id: result };
     }
 }

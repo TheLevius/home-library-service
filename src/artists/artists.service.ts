@@ -24,8 +24,17 @@ export class ArtistsService {
 
     findAll = async (): Promise<Artist[]> => this.prisma.artist.findMany();
 
-    findOneById = async (id: string): Promise<Artist> =>
-        this.prisma.artist.findUnique({ where: { id } });
+    findOneById = async (id: string): Promise<Artist> => {
+        try {
+            const result = await this.prisma.artist.findUnique({
+                where: { id },
+            });
+            return result;
+        } catch (err) {
+            console.error(err);
+            throw new NotFoundException(`Artist with id: ${id} not found`);
+        }
+    };
 
     create = async (dto: CreateArtistDto): Promise<Artist> =>
         this.prisma.artist.create({ data: dto });

@@ -1,5 +1,4 @@
 import {
-    BadRequestException,
     ForbiddenException,
     Injectable,
     NotFoundException,
@@ -22,57 +21,126 @@ export class UsersService {
     ) {}
 
     public findAll = async () => {
-        const users = await this.prisma.user.findMany();
-        return users.map(this.trimmer);
+        const users = await this.prisma.user.findMany({
+            select: {
+                id: true,
+                login: true,
+                version: true,
+                createdAt: true,
+                updatedAt: true,
+            },
+        });
+        return users.map((user) => ({
+            ...user,
+            createdAt: new Date(user.createdAt).valueOf(),
+            updatedAt: new Date(user.updatedAt).valueOf(),
+        }));
     };
 
     public findOneById = async (
         id: string
     ): Promise<Omit<User, 'password'>> => {
         // this.trimPassword(this.dbUsersTableService.findOneById(id));
-        const result = await this.prisma.user.findUnique({ where: { id } });
-        return this.trimmer(result);
+        try {
+            const result = await this.prisma.user.findUnique({
+                where: { id },
+                select: {
+                    id: true,
+                    login: true,
+                    version: true,
+                    createdAt: true,
+                    updatedAt: true,
+                },
+            });
+            return {
+                ...result,
+                createdAt: new Date(result.createdAt).valueOf(),
+                updatedAt: new Date(result.updatedAt).valueOf(),
+            };
+        } catch (err) {
+            console.error(err);
+            throw new NotFoundException(`User with id: ${id} not found`);
+        }
     };
 
     public create = async ({
         login,
         password,
-    }: CreateUserDto): Promise<Omit<UserPrisma, 'password'>> => {
+    }: CreateUserDto): Promise<{
+        id: string;
+        login: string;
+        version: number;
+        createdAt: number;
+        updatedAt: number;
+    }> => {
         const result = await this.prisma.user.create({
             data: {
                 login,
                 password: this.hashPassword(password),
             },
+            select: {
+                id: true,
+                login: true,
+                version: true,
+                createdAt: true,
+                updatedAt: true,
+            },
         });
+        return {
+            ...result,
+            createdAt: new Date(result.createdAt).valueOf(),
+            updatedAt: new Date(result.updatedAt).valueOf(),
+        };
         // const result = this.dbUsersTableService.create({
         //     login,
         //     password: this.hashPassword(password),
         // });
-
-        return this.trimmer(result);
+        // return this.trimmer(result);
         // return this.trimPassword(result);
     };
 
     public update = async (
         id: string,
         dto: UpdatePasswordDto
-    ): Promise<Omit<User, 'password'>> => {
+    ): Promise<{
+        id: string;
+        login: string;
+        version: number;
+        createdAt: number;
+        updatedAt: number;
+    }> => {
         let user: UserPrisma;
         try {
-            user = await this.prisma.user.findUnique({ where: { id } });
+            user = await this.prisma.user.findUniqueOrThrow({ where: { id } });
         } catch (err) {
-            console.log(err);
-            throw new NotFoundException('User not found');
+            throw new NotFoundException(`User with id: ${id} not found`);
         }
-        if (this.hashPassword(dto.oldPassword) !== user.password) {
+        if (this.hashPassword(dto.oldPassword) !== user?.password) {
             throw new ForbiddenException(`oldPassword is wrong`);
         }
 
-        const result = await this.prisma.user.update({
-            where: { id },
-            data: { password: dto.newPassword, version: ++user.version },
-        });
-        return this.trimmer(result);
+        try {
+            const result = await this.prisma.user.update({
+                where: { id },
+                data: { password: dto.newPassword, version: ++user.version },
+                select: {
+                    id: true,
+                    login: true,
+                    version: true,
+                    createdAt: true,
+                    updatedAt: true,
+                },
+            });
+            return {
+                ...result,
+                createdAt: new Date(result.createdAt).valueOf(),
+                updatedAt: new Date(result.updatedAt).valueOf(),
+            };
+        } catch (err) {
+            console.error(err);
+            throw new NotFoundException(`User with id: ${id} not found`);
+        }
+
         // const existResult = this.dbUsersTableService.findOneById(id);
         // if (existResult.status === Statuses.Failed) {
         //     throw new NotFoundException('User not found');
@@ -91,11 +159,24 @@ export class UsersService {
 
     public delete = async (id: string): Promise<Omit<User, 'password'>> => {
         try {
-            const result = await this.prisma.user.delete({ where: { id } });
-            return this.trimmer(result);
+            const result = await this.prisma.user.delete({
+                where: { id },
+                select: {
+                    id: true,
+                    login: true,
+                    version: true,
+                    createdAt: true,
+                    updatedAt: true,
+                },
+            });
+            return {
+                ...result,
+                createdAt: new Date(result.createdAt).valueOf(),
+                updatedAt: new Date(result.updatedAt).valueOf(),
+            };
         } catch (err) {
             console.log(err);
-            throw new BadRequestException('Bad Request');
+            throw new NotFoundException(`User with id: ${id} not found`);
         }
         // this.trimPassword(this.dbUsersTableService.delete(id));
     };
@@ -111,9 +192,5 @@ export class UsersService {
         }
         delete result.row.password;
         return result;
-    };
-    private trimmer = (user) => {
-        delete user.password;
-        return user;
     };
 }

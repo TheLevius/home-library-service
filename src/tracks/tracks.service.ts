@@ -35,7 +35,7 @@ export class TracksService {
             return result;
         } catch (err) {
             console.error(err);
-            throw new NotFoundException(`Track was not found`);
+            throw new NotFoundException(`Track with id: ${id} not found`);
         }
     };
 

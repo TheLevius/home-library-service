@@ -4,6 +4,7 @@ import {
     Delete,
     Get,
     HttpCode,
+    NotFoundException,
     Param,
     ParseUUIDPipe,
     Post,
@@ -29,15 +30,21 @@ export class UsersController {
     }
     @Post()
     async create(@Body() dto: CreateUserDto) {
-        return await this.usersService.create(dto);
+        const result = await this.usersService.create(dto);
+        return result;
     }
     @Put(':id')
     async update(
         @Param('id', ParseUUIDPipe) id: string,
         @Body() dto: UpdatePasswordDto
     ) {
+        // try {
         const result = await this.usersService.update(id, dto);
         return result;
+        // } catch (err) {
+        //     console.error(err);
+        //     throw new NotFoundException('User not found');
+        // }
     }
     @HttpCode(204)
     @Delete(':id')
