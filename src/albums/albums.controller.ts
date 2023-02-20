@@ -21,44 +21,43 @@ import { UpdateAlbumDto } from './dto/update-album.dto';
 export class AlbumsController {
     constructor(private readonly albumsService: AlbumsService) {}
     @Get()
-    getAll() {
-        const result = this.albumsService.findAll();
-        return result;
+    async getAll() {
+        return this.albumsService.findAll();
     }
     @Get(':id')
-    getOne(@Param('id', ParseUUIDPipe) id: string) {
-        const result = this.albumsService.findOneById(id);
-        if (result.status === Statuses.Failed) {
-            throw new NotFoundException('Album was not found');
-        }
-        return result.row;
+    async getOne(@Param('id', ParseUUIDPipe) id: string) {
+        const result = await this.albumsService.findOneById(id);
+        // if (result.status === Statuses.Failed) {
+        //     throw new NotFoundException('Album was not found');
+        // }
+        return result;
     }
     @Post()
-    create(@Body() dto: CreateAlbumDto) {
-        const result = this.albumsService.create(dto);
-        if (result.status === Statuses.Failed) {
-            throw new BadRequestException('Bad Request');
-        }
-        return result.row;
+    async create(@Body() dto: CreateAlbumDto) {
+        const result = await this.albumsService.create(dto);
+        // if (result.status === Statuses.Failed) {
+        //     throw new BadRequestException('Bad Request');
+        // }
+        return result;
     }
     @Put(':id')
-    update(
+    async update(
         @Param('id', ParseUUIDPipe) id: string,
         @Body() dto: UpdateAlbumDto
     ) {
-        const result = this.albumsService.update(id, dto);
-        if (result.status === Statuses.Failed) {
-            throw new BadRequestException('Bad Request');
-        }
-        return result.row;
+        const result = await this.albumsService.update(id, dto);
+        // if (result.status === Statuses.Failed) {
+        //     throw new BadRequestException('Bad Request');
+        // }
+        return result;
     }
     @HttpCode(204)
     @Delete(':id')
-    delete(@Param('id', ParseUUIDPipe) id: string) {
-        const result = this.albumsService.delete(id);
-        if (result.status === Statuses.Failed) {
-            throw new NotFoundException('Bad Request');
-        }
-        return result.row;
+    async delete(@Param('id', ParseUUIDPipe) id: string) {
+        const result = await this.albumsService.delete(id);
+        // if (result.status === Statuses.Failed) {
+        //     throw new NotFoundException('Bad Request');
+        // }
+        return result;
     }
 }

@@ -20,12 +20,12 @@ import { TracksService } from './tracks.service';
 export class TracksController {
     constructor(private readonly tracksService: TracksService) {}
     @Get()
-    getAll() {
+    async getAll() {
         const result = this.tracksService.findAll();
         return result;
     }
     @Get(':id')
-    getOne(@Param('id', ParseUUIDPipe) id: string) {
+    async getOne(@Param('id', ParseUUIDPipe) id: string) {
         const result = this.tracksService.findOneById(id);
         if (result.status === Statuses.Failed) {
             throw new NotFoundException('Track was not found');
@@ -33,7 +33,7 @@ export class TracksController {
         return result.row;
     }
     @Post()
-    create(@Body() dto: CreateTrackDto) {
+    async create(@Body() dto: CreateTrackDto) {
         const result = this.tracksService.create(dto);
         if (result.status === Statuses.Failed) {
             throw new BadRequestException('Bad Request');
@@ -41,7 +41,7 @@ export class TracksController {
         return result.row;
     }
     @Put(':id')
-    update(
+    async update(
         @Param('id', ParseUUIDPipe) id: string,
         @Body() dto: UpdateTrackDto
     ) {
@@ -53,7 +53,7 @@ export class TracksController {
     }
     @HttpCode(204)
     @Delete(':id')
-    delete(@Param('id', ParseUUIDPipe) id: string) {
+    async delete(@Param('id', ParseUUIDPipe) id: string) {
         const result = this.tracksService.delete(id);
         if (result.status === Statuses.Failed) {
             throw new BadRequestException('Bad Request');

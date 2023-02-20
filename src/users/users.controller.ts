@@ -1,5 +1,4 @@
 import {
-    BadRequestException,
     Body,
     Controller,
     Delete,
@@ -10,7 +9,7 @@ import {
     Post,
     Put,
 } from '@nestjs/common';
-import { Statuses } from 'src/db/interfaces/statuses.interface';
+// import { Statuses } from 'src/db/interfaces/statuses.interface';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdatePasswordDto } from './dto/update-user.dto';
 import { UsersService } from './users.service';
@@ -26,9 +25,6 @@ export class UsersController {
     @Get(':id')
     async getOne(@Param('id', ParseUUIDPipe) id: string) {
         const result = await this.usersService.findOneById(id);
-        // if (result.status === Statuses.Failed) {
-        //     throw new BadRequestException('User not found');
-        // }
         return result;
     }
     @Post()
@@ -41,18 +37,12 @@ export class UsersController {
         @Body() dto: UpdatePasswordDto
     ) {
         const result = await this.usersService.update(id, dto);
-        // if (result.status === Statuses.Failed) {
-        //     throw new BadRequestException('Bad Request');
-        // }
         return result;
     }
     @HttpCode(204)
     @Delete(':id')
     async delete(@Param('id', ParseUUIDPipe) id: string) {
         const result = await this.usersService.delete(id);
-        // if (result.status === Statuses.Failed) {
-        //     throw new BadRequestException('Bad Request');
-        // }
         return result;
     }
 }

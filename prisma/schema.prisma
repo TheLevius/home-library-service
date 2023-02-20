@@ -33,7 +33,7 @@ model Album {
 	name     	String 		@db.VarChar(100)
 	year     	Int
 	artist   	Artist? 		@relation(fields: [artistId], references: [id])
-	artistId 	String
+	artistId 	String?
 	tracks		Track[]
 	favorites	FavoriteAlbum[]
 }
@@ -43,9 +43,9 @@ model Track {
 	name		String		@db.VarChar(100)
 	duration	Int
 	artist		Artist?		@relation(fields: [artistId], references: [id])
-	artistId	String
+	artistId	String?
 	album		Album?		@relation(fields: [albumId], references: [id])
-	albumId		String
+	albumId		String?
 	favorites	FavoriteTrack[]
 }
 

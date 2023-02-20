@@ -70,7 +70,7 @@ export class UsersService {
 
         const result = await this.prisma.user.update({
             where: { id },
-            data: { password: dto.newPassword },
+            data: { password: dto.newPassword, version: ++user.version },
         });
         return this.trimmer(result);
         // const existResult = this.dbUsersTableService.findOneById(id);

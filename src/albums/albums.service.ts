@@ -1,5 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Result } from 'src/db/interfaces/result.interface';
+import { PrismaService } from 'src/db/prisma.service';
 import { DbAlbumsTableService } from 'src/db/table.album.service';
 import { DbArtistsTableService } from 'src/db/table.artist.service';
 import { DbFavoritesTableService } from 'src/db/table.favorites.service';
@@ -16,30 +17,56 @@ export class AlbumsService {
         private readonly dbArtistsTableService: DbArtistsTableService,
         private readonly dbAlbumsTableService: DbAlbumsTableService,
         private readonly dbTracksTableService: DbTracksTableService,
-        private readonly dbFavoritesTableService: DbFavoritesTableService
+        private readonly dbFavoritesTableService: DbFavoritesTableService,
+        private prisma: PrismaService
     ) {}
 
-    findAll = (): Album[] => this.dbAlbumsTableService.findAll();
+    findAll = async (): Promise<Album[]> => this.prisma.album.findMany();
 
-    findOneById = (id: string): Result<Album> => {
-        return this.dbAlbumsTableService.findOneById(id);
+    findOneById = async (id: string): Promise<Album> => {
+        try {
+            const result = this.prisma.album.findUnique({ where: { id } });
+            return result;
+        } catch (err) {
+            console.error;
+            throw new NotFoundException('Album was not found');
+        }
     };
 
-    create = (dto: CreateAlbumDto): Result<Album> =>
-        this.dbAlbumsTableService.create(dto);
+    create = async (dto: CreateAlbumDto): Promise<Album> =>
+        this.prisma.album.create({ data: dto });
+    // this.dbAlbumsTableService.create(dto);
 
-    update = (id: string, dto: UpdateAlbumDto): Result<Album> =>
-        this.dbAlbumsTableService.update(id, dto);
+    update = async (id: string, dto: UpdateAlbumDto): Promise<Album> => {
+        try {
+            const result = await this.prisma.album.update({
+                where: { id },
+                data: dto,
+            });
+            return result;
+        } catch (err) {
+            console.error(err);
+            throw new NotFoundException('Album was not found');
+        }
+    };
+    // this.dbAlbumsTableService.update(id, dto);
 
-    delete = (id: string): Result<Album> => {
-        this.dbFavoritesTableService.delete(id, 'albums');
-        const albumTracks = this.dbTracksTableService.findMany({
-            key: 'albumId',
-            equals: id,
-        });
-        albumTracks.forEach((track) =>
-            this.dbTracksTableService.update(track.id, { albumId: null })
-        );
-        return this.dbAlbumsTableService.delete(id);
+    delete = async (id: string): Promise<Album> => {
+        try {
+            const result = await this.prisma.album.delete({ where: { id } });
+            return result;
+        } catch (err) {
+            console.error(err);
+            throw new NotFoundException(`Album doesn't exist`);
+        }
+        // this.dbFavoritesTableService.delete(id, 'albums');
+        // const albumTracks = this.dbTracksTableService.findMany({
+        //     key: 'albumId',
+        //     equals: id,
+        // });
+        // albumTracks.forEach((track) =>
+        //     this.dbTracksTableService.update(track.id, { albumId: null })
+        // );
+        // return this.dbAlbumsTableService.delete(id);
     };
 }
