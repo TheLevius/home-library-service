@@ -122,7 +122,10 @@ export class UsersService {
         try {
             const result = await this.prisma.user.update({
                 where: { id },
-                data: { password: dto.newPassword, version: ++user.version },
+                data: {
+                    password: this.hashPassword(dto.newPassword),
+                    version: ++user.version,
+                },
                 select: {
                     id: true,
                     login: true,
