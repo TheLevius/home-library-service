@@ -1,5 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import {
+    BadRequestException,
+    Injectable,
+    NotFoundException,
+} from '@nestjs/common';
 import { Result } from 'src/db/interfaces/result.interface';
+import { PrismaService } from 'src/db/prisma.service';
 import { DbAlbumsTableService } from 'src/db/table.album.service';
 import { DbArtistsTableService } from 'src/db/table.artist.service';
 import { DbFavoritesTableService } from 'src/db/table.favorites.service';
@@ -16,22 +21,53 @@ export class TracksService {
         private readonly dbArtistsTableService: DbArtistsTableService,
         private readonly dbAlbumsTableService: DbAlbumsTableService,
         private readonly dbTracksTableService: DbTracksTableService,
-        private readonly dbFavoritesTableService: DbFavoritesTableService
+        private readonly dbFavoritesTableService: DbFavoritesTableService,
+        private prisma: PrismaService
     ) {}
 
-    findAll = (): Track[] => this.dbTracksTableService.findAll();
+    findAll = async (): Promise<Track[]> => this.prisma.track.findMany();
 
-    findOneById = (id: string): Result<Track> =>
-        this.dbTracksTableService.findOneById(id);
+    findOneById = async (id: string): Promise<Track> => {
+        try {
+            const result = await this.prisma.track.findUnique({
+                where: { id },
+            });
+            return result;
+        } catch (err) {
+            console.error(err);
+            throw new NotFoundException(`Track was not found`);
+        }
+    };
 
-    create = (dto: CreateTrackDto): Result<Track> =>
-        this.dbTracksTableService.create(dto);
+    // this.dbTracksTableService.findOneById(id);
 
-    update = (id: string, dto: UpdateTrackDto): Result<Track> =>
-        this.dbTracksTableService.update(id, dto);
+    create = async (dto: CreateTrackDto): Promise<Track> =>
+        this.prisma.track.create({ data: dto });
+    // this.dbTracksTableService.create(dto);
 
-    delete = (id: string): Result<Track> => {
-        this.dbFavoritesTableService.delete(id, 'tracks');
-        return this.dbTracksTableService.delete(id);
+    update = async (id: string, dto: UpdateTrackDto): Promise<Track> => {
+        try {
+            const result = await this.prisma.track.update({
+                where: { id },
+                data: dto,
+            });
+            return result;
+        } catch (err) {
+            console.error(err);
+            throw new NotFoundException('Track was not found');
+        }
+    };
+    // this.dbTracksTableService.update(id, dto);
+
+    delete = async (id: string): Promise<Track> => {
+        try {
+            const result = await this.prisma.track.delete({ where: { id } });
+            return result;
+        } catch (err) {
+            console.error(err);
+            throw new BadRequestException('Bad Request');
+        }
+        // this.dbFavoritesTableService.delete(id, 'tracks');
+        // return this.dbTracksTableService.delete(id);
     };
 }
