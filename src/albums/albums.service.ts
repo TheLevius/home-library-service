@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Result } from 'src/db/interfaces/result.interface';
-import { PrismaService } from 'src/db/prisma.service';
+import { PrismaService } from 'src/prisma/prisma.service';
 import { DbAlbumsTableService } from 'src/db/table.album.service';
 import { DbArtistsTableService } from 'src/db/table.artist.service';
 import { DbFavoritesTableService } from 'src/db/table.favorites.service';

@@ -10,10 +10,11 @@ services:
     environment:
       PORT: ${PORT}
     volumes:
-      - ./src:/app/src     
+      - ./src:/app/src    
     networks:
       - docker_network
     restart: always
+    env_file: .env
 
   postgres15:
     container_name: postgres15

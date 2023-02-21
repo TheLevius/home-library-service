@@ -11,7 +11,7 @@ import { DbUsersTableService } from 'src/db/table.users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdatePasswordDto } from './dto/update-user.dto';
 import { User as UserPrisma } from '@prisma/client';
-import { PrismaService } from 'src/db/prisma.service';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class UsersService {
