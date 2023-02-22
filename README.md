@@ -52,7 +52,7 @@ npm run test
 
 ## Images on docker hub (private)
 
-![Imgur](https://imgur.com/8tYoOai)
+[Imgur screenshot](https://imgur.com/8tYoOai)
 
 **Details:**
 
