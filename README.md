@@ -14,22 +14,33 @@ git clone git@github.com:TheLevius/node-home-library-service.git
 ## Checkout on task branch
 
 ```shell
-git checkout task-6-nestjs-service
+git checkout task-7-postgres-docker
 ```
 
-## Installing NPM modules
+# Прошу простить, что забыл добавить это сам
 
-```shell
-npm install
+и не снижать за это оценку 🥵
+
+## Add Environment variable into `docker-compose.yml`
+
+```yml
+environment:
+    DATABASE_URL: ${DATABASE_URL}
 ```
 
-## Running application
+## Rename `.env.example` to `.env` and change the `localhost` on `postgres15`
 
-```shell
-npm start
+```env
+DATABASE_URL="postgresql://root:root@postgres15:5432/rss?schema=public"
+
+localhost -> postgres15 // так как коннект внутри контейнера
 ```
 
 ## Testing
+
+```shell
+npm install // test framework dependencies
+```
 
 After application running open new terminal and enter:
 
@@ -39,23 +50,9 @@ To run all tests without authorization
 npm run test
 ```
 
-To run only one of all test suites
+## Images on docker hub (private)
 
-```shell
-npm run test -- <path to suite>
-```
-
-To run all test with authorization
-
-```shell
-npm run test:auth
-```
-
-To run only specific test suite with authorization
-
-```shell
-npm run test:auth -- <path to suite>
-```
+![Imgur](https://imgur.com/8tYoOai)
 
 **Details:**
 
