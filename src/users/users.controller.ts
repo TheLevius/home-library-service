@@ -4,13 +4,11 @@ import {
     Delete,
     Get,
     HttpCode,
-    NotFoundException,
     Param,
     ParseUUIDPipe,
     Post,
     Put,
 } from '@nestjs/common';
-// import { Statuses } from 'src/db/interfaces/statuses.interface';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdatePasswordDto } from './dto/update-user.dto';
 import { UsersService } from './users.service';
@@ -38,13 +36,8 @@ export class UsersController {
         @Param('id', ParseUUIDPipe) id: string,
         @Body() dto: UpdatePasswordDto
     ) {
-        // try {
         const result = await this.usersService.update(id, dto);
         return result;
-        // } catch (err) {
-        //     console.error(err);
-        //     throw new NotFoundException('User not found');
-        // }
     }
     @HttpCode(204)
     @Delete(':id')

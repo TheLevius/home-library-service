@@ -14,11 +14,13 @@ services:
       - ./src:/app/src     
     networks:
       - docker_network
-    restart: always
+    restart: "no"
 
   postgres15:
     container_name: postgres15
     build: ./db/
+    ports:
+      - ${DB_PORT}:${DB_PORT}
     environment:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASS}

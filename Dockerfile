@@ -2,15 +2,17 @@ FROM node:18-alpine AS builder
 WORKDIR /app
 COPY package*.json .
 COPY prisma ./prisma/
+COPY tsconfig.build.json ./
+COPY tsconfig.json ./
+COPY src ./
 RUN npm install
+RUN npx prisma generate
 COPY . .
-RUN npm run build
 FROM node:18-alpine
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package*.json ./
-COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/prisma ./prisma
-ENV PORT=4000
-VOLUME [ "/src" ]
-EXPOSE $PORT
-CMD [  "npm", "run", "start:migrate:prod" ]
+COPY --from=builder /app/tsconfig.json tsconfig.json
+COPY --from=builder /app/tsconfig.build.json tsconfig.build.json
+COPY --from=builder /app/src ./src
+CMD [  "npm", "run", "start:docker" ]
