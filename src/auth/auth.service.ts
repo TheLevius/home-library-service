@@ -3,7 +3,6 @@ import {
     ForbiddenException,
     Injectable,
 } from '@nestjs/common';
-import { PrismaService } from 'src/db/prisma.service';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { UsersService } from 'src/users/users.service';
 import { JwtService } from '@nestjs/jwt';
@@ -17,7 +16,6 @@ const tokenRefreshExpire = process.env.TOKEN_REFRESH_EXPIRE_TIME;
 @Injectable()
 export class AuthService {
     constructor(
-        private prisma: PrismaService,
         private usersService: UsersService,
         private jwtService: JwtService
     ) {}
@@ -26,7 +24,7 @@ export class AuthService {
             const result = await this.usersService.create(dto);
             return result;
         } catch (err) {
-            console.error(err);
+            console.error('------------------->', err);
             throw new BadRequestException('no login or password');
         }
     };

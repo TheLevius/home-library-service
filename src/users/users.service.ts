@@ -9,7 +9,7 @@ import { UpdatePasswordDto } from './dto/update-user.dto';
 import { User as UserPrisma } from '@prisma/client';
 import { PrismaService } from 'src/db/prisma.service';
 
-const salt = String(process.env.CRYPTO_SALT);
+// const salt = String(process.env.CRYPTO_SALT);
 @Injectable()
 export class UsersService {
     constructor(private prisma: PrismaService) {}
@@ -97,7 +97,7 @@ export class UsersService {
     }: CreateUserDto): Promise<{ login: string; id: string }> => {
         let user: UserPrisma;
         try {
-            user = await this.prisma.user.findUniqueOrThrow({
+            user = await this.prisma.user.findFirstOrThrow({
                 where: { login },
             });
         } catch (err) {
@@ -120,7 +120,7 @@ export class UsersService {
     }> => {
         let user: UserPrisma;
         try {
-            user = await this.prisma.user.findUniqueOrThrow({ where: { id } });
+            user = await this.prisma.user.findFirstOrThrow({ where: { id } });
         } catch (err) {
             throw new NotFoundException(`User with id: ${id} not found`);
         }

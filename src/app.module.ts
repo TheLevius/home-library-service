@@ -8,8 +8,8 @@ import { AlbumsModule } from './albums/albums.module';
 import { TracksModule } from './tracks/tracks.module';
 import { FavsModule } from './favs/favs.module';
 import { AuthModule } from './auth/auth.module';
-import { APP_FILTER, APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
+import { APP_GUARD } from '@nestjs/core';
 @Module({
     imports: [
         DbModule,
