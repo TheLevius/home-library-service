@@ -7,6 +7,7 @@ import { ArtistsModule } from './artists/artists.module';
 import { AlbumsModule } from './albums/albums.module';
 import { TracksModule } from './tracks/tracks.module';
 import { FavsModule } from './favs/favs.module';
+import { AuthModule } from './auth/auth.module';
 @Module({
     imports: [
         DbModule,
@@ -15,6 +16,7 @@ import { FavsModule } from './favs/favs.module';
         AlbumsModule,
         TracksModule,
         FavsModule,
+        AuthModule,
     ],
     controllers: [AppController],
     providers: [AppService],

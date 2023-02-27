@@ -3,13 +3,13 @@ import {
     Injectable,
     NotFoundException,
 } from '@nestjs/common';
-import { createHash } from 'node:crypto';
-import { User } from 'src/db/interfaces/user.interface';
+import { scryptSync } from 'node:crypto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdatePasswordDto } from './dto/update-user.dto';
 import { User as UserPrisma } from '@prisma/client';
 import { PrismaService } from 'src/db/prisma.service';
 
+const salt = String(process.env.CRYPTO_SALT);
 @Injectable()
 export class UsersService {
     constructor(private prisma: PrismaService) {}
@@ -33,9 +33,15 @@ export class UsersService {
 
     public findOneById = async (
         id: string
-    ): Promise<Omit<User, 'password'>> => {
+    ): Promise<{
+        id: string;
+        login: string;
+        version: number;
+        createdAt: number;
+        updatedAt: number;
+    }> => {
         try {
-            const result = await this.prisma.user.findUnique({
+            const result = await this.prisma.user.findUniqueOrThrow({
                 where: { id },
                 select: {
                     id: true,
@@ -85,7 +91,23 @@ export class UsersService {
             updatedAt: new Date(result.updatedAt).valueOf(),
         };
     };
-
+    public checkLogin = async ({
+        login,
+        password,
+    }: CreateUserDto): Promise<{ login: string; id: string }> => {
+        let user: UserPrisma;
+        try {
+            user = await this.prisma.user.findUniqueOrThrow({
+                where: { login },
+            });
+        } catch (err) {
+            throw new NotFoundException(`User not found`);
+        }
+        if (this.hashPassword(password) !== user?.password) {
+            throw new ForbiddenException(`Password is wrong`);
+        }
+        return { login: user.login, id: user.id };
+    };
     public update = async (
         id: string,
         dto: UpdatePasswordDto
@@ -132,7 +154,15 @@ export class UsersService {
         }
     };
 
-    public delete = async (id: string): Promise<Omit<User, 'password'>> => {
+    public delete = async (
+        id: string
+    ): Promise<{
+        id: string;
+        login: string;
+        version: number;
+        createdAt: number;
+        updatedAt: number;
+    }> => {
         try {
             const result = await this.prisma.user.delete({
                 where: { id },
@@ -154,7 +184,9 @@ export class UsersService {
             throw new NotFoundException(`User with id: ${id} not found`);
         }
     };
-
-    private hashPassword = (password: string): string =>
-        createHash('sha256').update(password).digest('hex');
+    private hashPassword = (password: string): string => {
+        const result = scryptSync(password, String(salt), 32).toString('hex');
+        return result;
+        // return createHash('sha256').update(password).digest('hex');
+    };
 }
