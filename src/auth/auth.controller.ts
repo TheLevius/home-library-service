@@ -4,17 +4,16 @@ import {
     Controller,
     ForbiddenException,
     Post,
-    UseGuards,
 } from '@nestjs/common';
+import { Public } from 'src/decorators/public.decorator';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { AuthService } from './auth.service';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
-import { JwtAuthGuard } from './jwt-auth.guard';
 
 @Controller('auth')
 export class AuthController {
     constructor(private readonly authService: AuthService) {}
-
+    @Public()
     @Post('signup')
     async signUp(@Body() dto: CreateUserDto) {
         try {
@@ -25,7 +24,7 @@ export class AuthController {
             throw new BadRequestException('no login or password');
         }
     }
-
+    @Public()
     @Post('login')
     async login(@Body() dto: CreateUserDto) {
         try {
@@ -33,10 +32,9 @@ export class AuthController {
             return result;
         } catch (err) {
             console.error(err);
-            throw new ForbiddenException('no login or password');
+            throw new ForbiddenException('incorrect login or password');
         }
     }
-    @UseGuards(JwtAuthGuard)
     @Post('refresh')
     async refresh(@Body() dto: RefreshTokenDto) {
         try {

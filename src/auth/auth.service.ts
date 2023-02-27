@@ -49,12 +49,26 @@ export class AuthService {
         }
     };
     refresh = async (dto: RefreshTokenDto) => {
-        console.log(dto);
-        return {
-            accessToken: '',
-            refreshToken: '',
-        };
+        try {
+            const { login, userId } = await this.jwtService.verifyAsync<{
+                login: string;
+                userId: string;
+            }>(dto.refreshToken, {
+                secret: refreshSecret,
+            });
+            const [accessToken, refreshToken] = await this.generateTokens({
+                login,
+                userId,
+            });
+            return {
+                accessToken,
+                refreshToken,
+            };
+        } catch (err) {
+            console.error(err);
+        }
     };
+
     generateTokens = async (payload: { login: string; userId: string }) => {
         return Promise.all([
             this.generateToken(payload, {

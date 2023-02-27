@@ -3,7 +3,7 @@ import {
     Injectable,
     NotFoundException,
 } from '@nestjs/common';
-import { scryptSync } from 'node:crypto';
+import { createHash } from 'node:crypto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdatePasswordDto } from './dto/update-user.dto';
 import { User as UserPrisma } from '@prisma/client';
@@ -185,8 +185,8 @@ export class UsersService {
         }
     };
     private hashPassword = (password: string): string => {
-        const result = scryptSync(password, String(salt), 32).toString('hex');
-        return result;
-        // return createHash('sha256').update(password).digest('hex');
+        // const result = scryptSync(password, String(salt), 32).toString('hex');
+        // return result;
+        return createHash('sha256').update(password).digest('hex');
     };
 }
