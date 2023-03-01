@@ -11,30 +11,24 @@ import { FavoritesResponse } from './interfaces/favorites.interface';
 export class FavsService {
     constructor(private prisma: PrismaService) {}
     findAll = async (): Promise<FavoritesResponse> => {
-        try {
-            const [artists, albums, tracks] = await Promise.all([
-                this.prisma.favoriteArtist.findMany({
-                    select: { artist: true },
-                }),
-                this.prisma.favoriteAlbum.findMany({
-                    select: { album: true },
-                }),
-                this.prisma.favoriteTrack.findMany({
-                    select: { track: true },
-                }),
-            ]).catch((e) => {
-                console.error('all catch: ', e);
-                throw new BadRequestException('PROMISE ALL BAD');
-            });
-            const result = {
-                artists: artists.map(({ artist }) => artist),
-                albums: albums.map(({ album }) => album),
-                tracks: tracks.map(({ track }) => track),
-            };
-            return result;
-        } catch (err) {
-            throw new BadRequestException('Bad Request');
-        }
+        const [artists, albums, tracks] = await Promise.all([
+            this.prisma.favoriteArtist.findMany({
+                select: { artist: true },
+            }),
+            this.prisma.favoriteAlbum.findMany({
+                select: { album: true },
+            }),
+            this.prisma.favoriteTrack.findMany({
+                select: { track: true },
+            }),
+        ]).catch(() => {
+            throw new BadRequestException('PROMISE ALL BAD');
+        });
+        return {
+            artists: artists.map(({ artist }) => artist),
+            albums: albums.map(({ album }) => album),
+            tracks: tracks.map(({ track }) => track),
+        };
     };
     createFavoriteArtist = async (id: string) => {
         try {
@@ -43,7 +37,6 @@ export class FavsService {
             });
             return result;
         } catch (err) {
-            console.error(err);
             throw new UnprocessableEntityException(
                 `artist with id: ${id} does not exist`
             );
@@ -56,7 +49,6 @@ export class FavsService {
             });
             return result;
         } catch (err) {
-            console.error(err);
             throw new NotFoundException(`artist was not found`);
         }
     };
@@ -67,7 +59,6 @@ export class FavsService {
             });
             return result;
         } catch (err) {
-            console.error(err);
             throw new UnprocessableEntityException(
                 `Album with id: ${id} does not exist`
             );
@@ -80,7 +71,6 @@ export class FavsService {
             });
             return result;
         } catch (err) {
-            console.error(err);
             throw new NotFoundException(`Album was not found`);
         }
     };
@@ -91,7 +81,6 @@ export class FavsService {
             });
             return result;
         } catch (err) {
-            console.error(err);
             throw new UnprocessableEntityException(
                 `Track with id: ${id} does not exist`
             );
@@ -104,7 +93,6 @@ export class FavsService {
             });
             return result;
         } catch (err) {
-            console.error(err);
             throw new NotFoundException(`Track was not found`);
         }
     };

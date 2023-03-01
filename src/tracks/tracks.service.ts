@@ -1,8 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { Track } from '@prisma/client';
 import { PrismaService } from 'src/db/prisma.service';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
-import { Track } from './interfaces/track.interface';
 
 @Injectable()
 export class TracksService {
@@ -17,7 +17,6 @@ export class TracksService {
             });
             return result;
         } catch (err) {
-            console.error(err);
             throw new NotFoundException(`Track with id: ${id} not found`);
         }
     };
@@ -33,7 +32,6 @@ export class TracksService {
             });
             return result;
         } catch (err) {
-            console.error(err);
             throw new NotFoundException('Track was not found');
         }
     };
@@ -43,7 +41,6 @@ export class TracksService {
             const result = await this.prisma.track.delete({ where: { id } });
             return result;
         } catch (err) {
-            console.error(err);
             throw new NotFoundException(`Track with id: ${id} does not exist`);
         }
     };

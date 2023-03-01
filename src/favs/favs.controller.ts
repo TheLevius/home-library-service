@@ -16,8 +16,7 @@ export class FavsController {
     constructor(private readonly favsService: FavsService) {}
     @Get()
     async getAll() {
-        const result = await this.favsService.findAll();
-        return result;
+        return this.favsService.findAll();
     }
     @Post('track/:id')
     async createTrack(@Param('id', ParseUUIDPipe) id: string) {

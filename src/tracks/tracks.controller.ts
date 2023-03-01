@@ -18,31 +18,26 @@ export class TracksController {
     constructor(private readonly tracksService: TracksService) {}
     @Get()
     async getAll() {
-        const result = await this.tracksService.findAll();
-        return result;
+        return this.tracksService.findAll();
     }
     @Get(':id')
     async getOne(@Param('id', ParseUUIDPipe) id: string) {
-        const result = await this.tracksService.findOneById(id);
-        return result;
+        return this.tracksService.findOneById(id);
     }
     @Post()
     async create(@Body() dto: CreateTrackDto) {
-        const result = await this.tracksService.create(dto);
-        return result;
+        return this.tracksService.create(dto);
     }
     @Put(':id')
     async update(
         @Param('id', ParseUUIDPipe) id: string,
         @Body() dto: UpdateTrackDto
     ) {
-        const result = await this.tracksService.update(id, dto);
-        return result;
+        return this.tracksService.update(id, dto);
     }
     @HttpCode(204)
     @Delete(':id')
     async delete(@Param('id', ParseUUIDPipe) id: string) {
-        const result = await this.tracksService.delete(id);
-        return result;
+        return this.tracksService.delete(id);
     }
 }

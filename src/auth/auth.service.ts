@@ -1,8 +1,4 @@
-import {
-    BadRequestException,
-    ForbiddenException,
-    Injectable,
-} from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { UsersService } from 'src/users/users.service';
 import { JwtService } from '@nestjs/jwt';
@@ -20,12 +16,7 @@ export class AuthService {
         private jwtService: JwtService
     ) {}
     create = async (dto: CreateUserDto) => {
-        try {
-            const result = await this.usersService.create(dto);
-            return result;
-        } catch (err) {
-            throw new BadRequestException('no login or password');
-        }
+        return this.usersService.create(dto);
     };
     login = async (dto: CreateUserDto) => {
         try {
@@ -42,32 +33,32 @@ export class AuthService {
             };
         } catch (err) {
             console.error(err);
-            throw new ForbiddenException('no login or password');
+            throw new ForbiddenException('incorrect login or password');
         }
     };
     refresh = async (dto: RefreshTokenDto) => {
-        try {
-            const { login, userId } = await this.jwtService.verifyAsync<{
+        const { login, userId } = await this.jwtService
+            .verifyAsync<{
                 login: string;
                 userId: string;
             }>(dto.refreshToken, {
                 secret: refreshSecret,
+            })
+            .catch(() => {
+                throw new ForbiddenException('invalid token');
             });
-            const [accessToken, refreshToken] = await this.generateTokens({
-                login,
-                userId,
-            });
-            return {
-                accessToken,
-                refreshToken,
-            };
-        } catch (err) {
-            console.error(err);
-        }
+        const [accessToken, refreshToken] = await this.generateTokens({
+            login,
+            userId,
+        });
+        return {
+            accessToken,
+            refreshToken,
+        };
     };
 
-    generateTokens = async (payload: { login: string; userId: string }) => {
-        return Promise.all([
+    generateTokens = async (payload: { login: string; userId: string }) =>
+        Promise.all([
             this.generateToken(payload, {
                 secret: accessSecret,
                 expiresIn: tokenExpire,
@@ -77,7 +68,7 @@ export class AuthService {
                 expiresIn: tokenRefreshExpire,
             }),
         ]);
-    };
+
     generateToken = async (
         payload: { login: string; userId: string },
         { secret, expiresIn }: { secret: string; expiresIn: string }

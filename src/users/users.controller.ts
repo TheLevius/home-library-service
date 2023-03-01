@@ -18,31 +18,26 @@ export class UsersController {
     constructor(private readonly usersService: UsersService) {}
     @Get()
     async getAll() {
-        const result = await this.usersService.findAll();
-        return result;
+        return this.usersService.findAll();
     }
     @Get(':id')
     async getOne(@Param('id', ParseUUIDPipe) id: string) {
-        const result = await this.usersService.findOneById(id);
-        return result;
+        return this.usersService.findOneById(id);
     }
     @Post()
     async create(@Body() dto: CreateUserDto) {
-        const result = await this.usersService.create(dto);
-        return result;
+        return this.usersService.create(dto);
     }
     @Put(':id')
     async update(
         @Param('id', ParseUUIDPipe) id: string,
         @Body() dto: UpdatePasswordDto
     ) {
-        const result = await this.usersService.update(id, dto);
-        return result;
+        return this.usersService.update(id, dto);
     }
     @HttpCode(204)
     @Delete(':id')
     async delete(@Param('id', ParseUUIDPipe) id: string) {
-        const result = await this.usersService.delete(id);
-        return result;
+        return this.usersService.delete(id);
     }
 }

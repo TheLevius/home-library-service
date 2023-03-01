@@ -22,26 +22,22 @@ export class AlbumsController {
     }
     @Get(':id')
     async getOne(@Param('id', ParseUUIDPipe) id: string) {
-        const result = await this.albumsService.findOneById(id);
-        return result;
+        return this.albumsService.findOneById(id);
     }
     @Post()
     async create(@Body() dto: CreateAlbumDto) {
-        const result = await this.albumsService.create(dto);
-        return result;
+        return this.albumsService.create(dto);
     }
     @Put(':id')
     async update(
         @Param('id', ParseUUIDPipe) id: string,
         @Body() dto: UpdateAlbumDto
     ) {
-        const result = await this.albumsService.update(id, dto);
-        return result;
+        return this.albumsService.update(id, dto);
     }
     @HttpCode(204)
     @Delete(':id')
     async delete(@Param('id', ParseUUIDPipe) id: string) {
-        const result = await this.albumsService.delete(id);
-        return result;
+        return this.albumsService.delete(id);
     }
 }
