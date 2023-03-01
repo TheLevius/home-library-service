@@ -5,8 +5,8 @@ COPY prisma ./prisma/
 COPY tsconfig.build.json ./
 COPY tsconfig.json ./
 COPY src ./
-RUN npm install
-RUN npx prisma generate
+COPY .env ./
+RUN npm ci
 COPY . .
 FROM node:18-alpine
 COPY --from=builder /app/node_modules ./node_modules

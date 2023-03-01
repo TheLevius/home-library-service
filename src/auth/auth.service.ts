@@ -24,7 +24,6 @@ export class AuthService {
             const result = await this.usersService.create(dto);
             return result;
         } catch (err) {
-            console.error('------------------->', err);
             throw new BadRequestException('no login or password');
         }
     };

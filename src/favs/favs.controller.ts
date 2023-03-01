@@ -1,4 +1,5 @@
 import {
+    BadRequestException,
     Controller,
     Delete,
     Get,
@@ -15,8 +16,13 @@ export class FavsController {
     constructor(private readonly favsService: FavsService) {}
     @Get()
     async getAll() {
-        const result = await this.favsService.findAll();
-        return result;
+        try {
+            const result = await this.favsService.findAll();
+            return result;
+        } catch (err) {
+            console.error(err);
+            throw new BadRequestException('BAD');
+        }
     }
     @Post('track/:id')
     async createTrack(@Param('id', ParseUUIDPipe) id: string) {

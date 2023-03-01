@@ -5,28 +5,38 @@ import {
 } from '@nestjs/common';
 
 import { PrismaService } from 'src/db/prisma.service';
-import { FavoriteArtist } from '@prisma/client';
+import { Album, Artist, FavoriteArtist, Track } from '@prisma/client';
 
 @Injectable()
 export class FavsService {
     constructor(private prisma: PrismaService) {}
-    findAll = async (): Promise<any> => {
-        const [artists, albums, tracks] = await Promise.all([
-            this.prisma.favoriteArtist.findMany({
-                select: { artist: true },
-            }),
-            this.prisma.favoriteAlbum.findMany({
-                select: { album: true },
-            }),
-            this.prisma.favoriteTrack.findMany({
-                select: { track: true },
-            }),
-        ]);
-        return {
-            artists: artists.map(({ artist }) => artist),
-            albums: albums.map(({ album }) => album),
-            tracks: tracks.map(({ track }) => track),
-        };
+    findAll = async (): Promise<{
+        artists: Artist[];
+        albums: Album[];
+        tracks: Track[];
+    }> => {
+        try {
+            const [artists, albums, tracks] = await Promise.all([
+                this.prisma.favoriteArtist.findMany({
+                    select: { artist: true },
+                }),
+                this.prisma.favoriteAlbum.findMany({
+                    select: { album: true },
+                }),
+                this.prisma.favoriteTrack.findMany({
+                    select: { track: true },
+                }),
+            ]);
+            const result = {
+                artists: artists.map(({ artist }) => artist),
+                albums: albums.map(({ album }) => album),
+                tracks: tracks.map(({ track }) => track),
+            };
+            console.log(`----------------------->>>>>>>`, result);
+            return result;
+        } catch (err) {
+            console.error(`SERVICE ERROR`, err);
+        }
     };
     createFavoriteArtist = async (id: string) => {
         try {
