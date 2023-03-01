@@ -17,7 +17,7 @@ export class AlbumsService {
             });
             return result;
         } catch (err) {
-            console.error;
+            console.error(err);
             throw new NotFoundException('Album was not found');
         }
     };

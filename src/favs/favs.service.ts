@@ -1,20 +1,16 @@
 import {
+    BadRequestException,
     Injectable,
     NotFoundException,
     UnprocessableEntityException,
 } from '@nestjs/common';
-
 import { PrismaService } from 'src/db/prisma.service';
-import { Album, Artist, FavoriteArtist, Track } from '@prisma/client';
+import { FavoritesResponse } from './interfaces/favorites.interface';
 
 @Injectable()
 export class FavsService {
     constructor(private prisma: PrismaService) {}
-    findAll = async (): Promise<{
-        artists: Artist[];
-        albums: Album[];
-        tracks: Track[];
-    }> => {
+    findAll = async (): Promise<FavoritesResponse> => {
         try {
             const [artists, albums, tracks] = await Promise.all([
                 this.prisma.favoriteArtist.findMany({
@@ -26,16 +22,18 @@ export class FavsService {
                 this.prisma.favoriteTrack.findMany({
                     select: { track: true },
                 }),
-            ]);
+            ]).catch((e) => {
+                console.error('all catch: ', e);
+                throw new BadRequestException('PROMISE ALL BAD');
+            });
             const result = {
                 artists: artists.map(({ artist }) => artist),
                 albums: albums.map(({ album }) => album),
                 tracks: tracks.map(({ track }) => track),
             };
-            console.log(`----------------------->>>>>>>`, result);
             return result;
         } catch (err) {
-            console.error(`SERVICE ERROR`, err);
+            throw new BadRequestException('Bad Request');
         }
     };
     createFavoriteArtist = async (id: string) => {
@@ -51,7 +49,7 @@ export class FavsService {
             );
         }
     };
-    deleteFavoriteArtist = async (id: string): Promise<FavoriteArtist> => {
+    deleteFavoriteArtist = async (id: string) => {
         try {
             const result = await this.prisma.favoriteArtist.delete({
                 where: { artistId: id },
