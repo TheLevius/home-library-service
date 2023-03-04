@@ -3,6 +3,7 @@ import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { UsersService } from 'src/users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
+import { MyLoggerService } from 'src/logger/logger.service';
 
 const accessSecret = process.env.JWT_SECRET_KEY;
 const refreshSecret = process.env.JWT_SECRET_REFRESH_KEY;
@@ -13,7 +14,8 @@ const tokenRefreshExpire = process.env.TOKEN_REFRESH_EXPIRE_TIME;
 export class AuthService {
     constructor(
         private usersService: UsersService,
-        private jwtService: JwtService
+        private jwtService: JwtService,
+        private loginService: MyLoggerService
     ) {}
     create = async (dto: CreateUserDto) => {
         return this.usersService.create(dto);
@@ -32,7 +34,6 @@ export class AuthService {
                 refreshToken,
             };
         } catch (err) {
-            console.error(err);
             throw new ForbiddenException('incorrect login or password');
         }
     };

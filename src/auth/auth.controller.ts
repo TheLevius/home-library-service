@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, HttpCode, Post } from '@nestjs/common';
 import { Public } from 'src/decorators/public.decorator';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { AuthService } from './auth.service';
@@ -17,6 +17,7 @@ export class AuthController {
     async login(@Body() dto: CreateUserDto) {
         return this.authService.login(dto);
     }
+    @HttpCode(200)
     @Post('refresh')
     async refresh(@Body() dto: RefreshTokenDto) {
         return this.authService.refresh(dto);

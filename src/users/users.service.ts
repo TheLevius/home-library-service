@@ -94,7 +94,7 @@ export class UsersService {
         } catch (err) {
             throw new NotFoundException(`User not found`);
         }
-        if (this.hashPassword(password) !== user?.password) {
+        if (this.hashPassword(password) !== user.password) {
             throw new ForbiddenException(`Password is wrong`);
         }
         return { login: user.login, id: user.id };
