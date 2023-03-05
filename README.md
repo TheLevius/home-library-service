@@ -14,26 +14,15 @@ git clone git@github.com:TheLevius/node-home-library-service.git
 ## Checkout on task branch
 
 ```shell
-git checkout task-7-postgres-docker
+git checkout task-8-logging-authentication
 ```
 
-# Прошу простить, что забыл добавить это сам
+## Rename `.env.example` to `.env`
 
-и не снижать за это оценку 🥵
+## Docker
 
-## Add Environment variable into `docker-compose.yml`
-
-```yml
-environment:
-    DATABASE_URL: ${DATABASE_URL}
-```
-
-## Rename `.env.example` to `.env` and change the `localhost` on `postgres15`
-
-```env
-DATABASE_URL="postgresql://root:root@postgres15:5432/rss?schema=public"
-
-localhost -> postgres15 // так как коннект внутри контейнера
+```shell
+docker-compose up --build
 ```
 
 ## Testing
@@ -44,15 +33,24 @@ npm install // test framework dependencies
 
 After application running open new terminal and enter:
 
-To run all tests without authorization
-
 ```shell
-npm run test
+npm run test:auth
 ```
 
-## Images on docker hub (private)
+Если выдает ошибки (`socket hang up`);
+просто надо остановить container `app` (база пусть работает, с миграциями должно быть все ок)
+и запустить приложение без докера
 
-[Imgur screenshot](https://imgur.com/8tYoOai)
+```shell
+docker stop app
+npm run start:dev
+```
+
+и потом снова запустить тесты
+
+```shell
+npm run test:auth
+```
 
 **Details:**
 
