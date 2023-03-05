@@ -1,20 +1,33 @@
-import { Injectable, Logger, NestMiddleware } from '@nestjs/common';
+import { Injectable, NestMiddleware } from '@nestjs/common';
 import { Request, Response } from 'express';
+import { MyLoggerService } from './logger.service';
 
 @Injectable()
 export class LoggerMiddleware implements NestMiddleware {
-    private readonly logger = new Logger(LoggerMiddleware.name);
+    constructor(private myLoggerService: MyLoggerService) {}
     use(req: Request, res: Response, next: () => void) {
-        this.logger.log(`Request URL: ${req.baseUrl}`);
-        this.logger.verbose(
-            `Request query params: ${JSON.stringify(req.query)}`
+        this.myLoggerService.setContext(req.baseUrl);
+        this.myLoggerService.log(
+            `Request URL: ${req.baseUrl} [${req.method}]`,
+            req.baseUrl
         );
-        this.logger.verbose(
-            `Request body: ${JSON.stringify(req.body, null, 2)}`
+        this.myLoggerService.verbose(
+            `Request URL: ${req.baseUrl} [${
+                req.method
+            }]\nRequest query: ${JSON.stringify(
+                req.query
+            )}\nRequest body: ${JSON.stringify(req.body, null, 2)}`,
+            req.baseUrl
         );
         next();
+
         res.once('finish', () => {
-            this.logger.log(`Response status code: ${res.statusCode}`);
+            if (res.statusCode < 400) {
+                this.myLoggerService.log(
+                    `Response statusCode: ${res.statusCode}`,
+                    req.baseUrl
+                );
+            }
         });
     }
 }

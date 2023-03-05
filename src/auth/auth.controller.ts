@@ -3,6 +3,7 @@ import { Public } from 'src/decorators/public.decorator';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { AuthService } from './auth.service';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
+import { RefreshTokenValidationPipe } from './validation/refreshToken.pipe';
 
 @Controller('auth')
 export class AuthController {
@@ -13,13 +14,17 @@ export class AuthController {
         return this.authService.create(dto);
     }
     @Public()
+    @HttpCode(200)
     @Post('login')
     async login(@Body() dto: CreateUserDto) {
         return this.authService.login(dto);
     }
     @HttpCode(200)
     @Post('refresh')
-    async refresh(@Body() dto: RefreshTokenDto) {
+    async refresh(
+        @Body('refreshToken', RefreshTokenValidationPipe)
+        dto: string
+    ) {
         return this.authService.refresh(dto);
     }
 }

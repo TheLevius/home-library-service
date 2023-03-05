@@ -2,37 +2,57 @@ import {
     ConsoleLogger,
     ConsoleLoggerOptions,
     Injectable,
+    Scope,
+    LogLevel,
 } from '@nestjs/common';
-
-@Injectable()
+import { FileWriter } from './FileWriter.service';
+const levels: LogLevel[] = ['error', 'warn', 'log', 'verbose', 'debug'];
+@Injectable({ scope: Scope.TRANSIENT })
 export class MyLoggerService extends ConsoleLogger {
-    constructor(context: string, options: ConsoleLoggerOptions) {
-        super(context, options);
+    private logLevels: LogLevel[];
+    constructor(
+        context: string,
+        options: ConsoleLoggerOptions,
+        private fileWriter: FileWriter
+    ) {
+        const logLevels =
+            levels.slice(0, +process.env.LOG_LEVEL || 5) || levels;
+        super(context, { ...options, logLevels });
+        this.logLevels = logLevels;
     }
-    /**
-     * Write a 'log' level log.
-     */
-    log(message: any, ...optionalParams: any[]) {
+
+    error(message: string) {
+        super.error(message);
+        if (this.logLevels.includes('error')) {
+            this.fileWriter.write(message, 'error');
+        }
+    }
+
+    warn(message: string) {
+        super.warn(message);
+        if (this.logLevels.includes('warn')) {
+            this.fileWriter.write(message, 'log');
+        }
+    }
+
+    log(message: string, url: string) {
         super.log(message);
+        if (this.logLevels.includes('log')) {
+            this.fileWriter.write(`${url}:\n${message}`, 'log');
+        }
     }
 
-    /**
-     * Write an 'error' level log.
-     */
-    // error(message: any, ...optionalParams: any[]) {}
+    verbose(message: string, url: string) {
+        super.verbose(message);
+        if (this.logLevels.includes('verbose')) {
+            this.fileWriter.write(`${url}:\n${message}`, 'log');
+        }
+    }
 
-    /**
-     * Write a 'warn' level log.
-     */
-    // warn(message: any, ...optionalParams: any[]) {}
-
-    /**
-     * Write a 'debug' level log.
-     */
-    // debug(message: any, ...optionalParams: any[]) {}
-
-    /**
-     * Write a 'verbose' level log.
-     */
-    // verbose(message: any, ...optionalParams: any[]) {}
+    debug(message: string) {
+        super.debug(message);
+        if (this.logLevels.includes('debug')) {
+            this.fileWriter.write(message, 'log');
+        }
+    }
 }

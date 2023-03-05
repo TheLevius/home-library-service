@@ -37,12 +37,12 @@ export class AuthService {
             throw new ForbiddenException('incorrect login or password');
         }
     };
-    refresh = async (dto: RefreshTokenDto) => {
+    refresh = async (dto: string) => {
         const { login, userId } = await this.jwtService
             .verifyAsync<{
                 login: string;
                 userId: string;
-            }>(dto.refreshToken, {
+            }>(dto, {
                 secret: refreshSecret,
             })
             .catch(() => {

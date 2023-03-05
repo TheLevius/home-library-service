@@ -36,11 +36,13 @@ export class MyExceptionFilter implements ExceptionFilter {
 
         httpAdapter.reply(ctx.getResponse(), responseBody, httpStatus);
 
-        const logMessage = `${path} [${request.method}], query ${JSON.stringify(
+        const logMessage = `Request URL: ${path} [${
+            request.method
+        }],\nRequest query params: ${JSON.stringify(
             request.query
-        )},  body ${JSON.stringify(
+        )},\nRequest body: ${JSON.stringify(
             request.body
-        )}, response status code ${httpStatus}`;
+        )},\nResponse statusCode: ${httpStatus}`;
 
         if (exception instanceof HttpException) {
             this.myLoggerService.warn(logMessage);
